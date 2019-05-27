@@ -4,11 +4,11 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 
-import compute_venn
-import param_estimator
 import pandas as pd
-import experiment_estimator
+import compute_venn
+import estimator
 import classify_drops
+import GMM_io
 from sys import argv
 import sys
 
@@ -38,26 +38,31 @@ classify_drops.store_simplified_classify_result(GMM_full_df, class_name_ary, sto
 # Clean up bad drops
 purified_df = classify_drops.purify_droplets(GMM_full_df, confidence_threshold)
 
+# Select target samples
+
 # Infer parameters
 (cell_num_ary, drop_num, capture_rate) = compute_venn.obtain_HTO_cell_n_drop_num(purified_df, base_bv_array, sample_num, estimated_total_cell_num, confidence_threshold)
 
-SSM_rate_ary = [param_estimator.compute_SSM_rate_with_cell_num(cell_num_ary[i], drop_num) for i in range(sample_num)]
+SSM_rate_ary = [estimator.compute_SSM_rate_with_cell_num(cell_num_ary[i], drop_num) for i in range(sample_num)]
+rounded_cell_num_ary = [round(cell_num) for cell_num in cell_num_ary]
+count_ary = classify_drops.count_by_class(purified_df, base_bv_array)
+MSM_rate, SSM_rate, singlet_rate = compute_venn.gather_multiplet_rates(count_ary, SSM_rate_ary, sample_num)
 
 print("==============================Summary==============================")
-rounded_cell_num_ary = [round(cell_num) for cell_num in cell_num_ary]
 print("\n\nNumber of cells per subpopulation",rounded_cell_num_ary)
 print("Total number of cells",sum(rounded_cell_num_ary))
 print("Total number of drops",round(drop_num))
 print("Capture Rate: %4.1f" % (capture_rate * 100) )
 
-
 SSM_rate_df = pd.DataFrame(data=[SSM_rate_ary], columns = data.columns, index = ["Relative SSM rate per HTO"])
 print("\n\n",SSM_rate_df)
 
-MSM_rate, SSM_rate, singlet_rate = compute_venn.gather_multiplet_rates(list(bv_realcell_venn_dict.values()), SSM_rate_ary, sample_num)
+count_ary = classify_drops.count_by_class(purified_df, base_bv_array)
+MSM_rate, SSM_rate, singlet_rate = compute_venn.gather_multiplet_rates(count_ary, SSM_rate_ary, sample_num)
+
 summary_df = pd.DataFrame(data=[[MSM_rate, SSM_rate, singlet_rate]], columns = ["MSM","SSM","Singlet"], index = ["Overall Rates among all drops"])
 print("\n\n",summary_df)
 
-print("\n\nOverall relative SSM rate in non-MSM drops: %f" % experiment_estimator.compute_relative_SSM_rate(SSM_rate, singlet_rate) )
+print("\n\nOverall relative SSM rate in non-MSM drops: %f" % estimator.compute_relative_SSM_rate(SSM_rate, singlet_rate) )
 
 print("%i\t%5.2f\t%5.2f\t%5.2f\t%5.2f" % (drop_num, singlet_rate * 100, MSM_rate * 100, SSM_rate * 100, (SSM_rate / (SSM_rate + singlet_rate) ) * 100) , file=sys.stderr)

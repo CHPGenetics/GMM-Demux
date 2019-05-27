@@ -1,17 +1,5 @@
-import compute_venn
-import param_estimator
-from sys import argv
 from math import pow
-
-def compute_multiplet_rates(cell_num, sample_num, drop_num):
-    base_bv_array = compute_venn.obtain_base_bv_array(sample_num)
-    HTO_num_ary = [round(cell_num / sample_num) for i in range(sample_num)]
-    cell_mix_rate = [param_estimator.compute_mix_rate(drop_num, HTO_num) for HTO_num in HTO_num_ary]
-    bv_simcell_venn_dict = compute_venn.compute_venn(HTO_num_ary, base_bv_array, cell_mix_rate, sample_num)
-    (MSM_rate, SSM_rate, singlet_rate) = \
-        compute_venn.gather_multiplet_rates(list(bv_simcell_venn_dict.values()), cell_mix_rate, sample_num)
-    return MSM_rate, SSM_rate, singlet_rate
-
+from math import log 
 
 def compute_multiplet_rates_asymp(cell_num, sample_num, drop_num):
     no_drop_rate = (1 - 1 / drop_num)
@@ -54,29 +42,39 @@ def get_min_hto_num(cell_num, drop_num, SSM_threshold, sample_num = 1):
     return sample_num
 
 
-if __name__ == "__main__":
-    cell_num = float(argv[1])
-    sample_num = int(argv[2])
-    drop_num = float(argv[3])
-    
-    #print(compute_multiplet_rates(cell_num, sample_num, drop_num) )
-    MSM_rate, SSM_rate, singlet_rate, drop_with_cells = compute_multiplet_rates_asymp(cell_num, sample_num, drop_num)
+def cell_num_estimator(a_num, captured_drop_num, capture_rate):
+    estimated_drop_num = captured_drop_num / capture_rate
+    base = 1 - 1 / estimated_drop_num
+    power = 1 - a_num / captured_drop_num
+    print("power:", power)
+    print("base:", base)
+    cell_num = log(power, base)
+    return cell_num
 
+
+def drop_num_estimator(a_num, b_num, shared_num):
+    drop_num = a_num * b_num / shared_num 
+    return drop_num 
+
+
+def compute_shared_num(drop_num, A_num, B_num):
+    A_rate = compute_mix_rate(drop_num, B_num) 
+    print("A_rate: ", A_rate)
+    shared_num = A_rate *  A_num
+    return shared_num
+
+
+# Computes the rate of drops that have certain cells in them.
+def compute_mix_rate(drop_num, cell_num):
     no_drop_rate = (1 - 1 / drop_num)
+    cell_in_rate = 1 - pow(no_drop_rate, cell_num)
+    return cell_in_rate
+
+
+def compute_SSM_rate_with_cell_num(cell_num, drop_num):
+    no_drop_rate = (1 - 1 / drop_num)
+    singlet_drops = cell_num * pow(no_drop_rate, cell_num - 1)
     drop_with_cells = (1 - pow(no_drop_rate, cell_num)) * drop_num
-    drop_per_sample = drop_with_cells * (1-MSM_rate) / sample_num
+    SSM_rate = 1 - singlet_drops / drop_with_cells
+    return SSM_rate
 
-    print(SSM_rate / (SSM_rate + singlet_rate))
-    print(param_estimator.compute_SSM_rate_with_cell_num(cell_num / sample_num, drop_num))
-
-    print("singlet: ", singlet_rate)
-    print("SSM: ", SSM_rate)
-    print("MSM: ", MSM_rate)
-    #print(compute_relative_SSM_rate(SSM_rate, singlet_rate))
-    #print(compute_relative_SSM_rate_asymp(cell_num / sample_num, drop_num))
-    
-#    cell_num = float(argv[1])
-#    drop_num = float(argv[2])
-#    SSM_threshold = float(argv[3])
-
-#    print(get_min_hto_num(cell_num, drop_num, SSM_threshold) )

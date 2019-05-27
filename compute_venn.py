@@ -1,5 +1,4 @@
-import param_estimator
-import check_multi_comp
+import estimator
 import classify_drops
 import BitVector
 import numpy as np
@@ -41,61 +40,6 @@ def check_set_bit(bv, bit_pos, sample_num):
     mask[bit_pos] = 1
     
     return int(mask & bv) != 0
-
-
-# Return the Venn dictionary
-def compute_venn(HTO_num_ary, base_bv_array, cell_mix_rate, sample_num):
-    bv_simcell_dict = {}
-    bv_simcell_venn_dict = {}
-
-    for i in range(sample_num):
-        bv_simcell_dict[int(base_bv_array[i])] = [HTO_num_ary[i] * (1 - cell_mix_rate[i])]
-
-    #for bv in base_bv_array:
-        #print(bv, " ", int(bv))
-
-    for bv in base_bv_array[sample_num:]:
-        bv_simcell_dict[int(bv)] = []
-    #bv_simcell_dict = {int(bv) : [] for bv in base_bv_array}
-    #print(bv_simcell_dict)
-    #print(bv_simcell_dict)
-
-    for bv in base_bv_array:
-        bv_key = int(bv)
-        for i in range(sample_num):
-            i_bv = BitVector.BitVector(size = sample_num)
-            i_bv[i] = 1
-            intersect_bv = i_bv | bv # intersect here means Venn intersect not bv intersect
-            if intersect_bv != bv:
-                intersect_val = mean(bv_simcell_dict[bv_key]) * cell_mix_rate[i]
-                intersect_bv_key = int(intersect_bv)
-                bv_simcell_dict[intersect_bv_key].append(intersect_val)
-
-
-    #print("Num of cells for each category:", bv_simcell_dict)
-
-
-    for bv in base_bv_array:
-        bv_key = int(bv)
-        bv_simcell_venn_dict[bv_key] = mean(bv_simcell_dict[bv_key])
-
-    # This is very important. It makes sure the inclusive relationship.
-    for bv in base_bv_array:
-        bv_key = int(bv)
-
-        for i in range(sample_num):
-
-            if not check_set_bit(bv, i, sample_num):
-                bv_simcell_venn_dict[bv_key] *= 1 - cell_mix_rate[i]
-
-
-    for bv in base_bv_array:
-        bv_key = int(bv)
-        bv_simcell_venn_dict[bv_key] = round(bv_simcell_venn_dict[bv_key])
-       
-
-    #print("Num of cells for Venn diagram:", bv_simcell_venn_dict)
-    return bv_simcell_venn_dict
 
 
 def gather_multiplet_rates(venn_values, SSM_rate_ary, sample_num):
@@ -149,7 +93,7 @@ def obtain_HTO_cell_n_drop_num(data_df, base_bv_array, sample_num, estimated_tot
                     shared_num += (data_df["Cluster_id"] == j).sum()
 
             if shared_num > 0:
-                estimated_drop_num = param_estimator.drop_num_estimator(hto_num_ary[hto_a_idx], hto_num_ary[hto_b_idx], shared_num)
+                estimated_drop_num = estimator.drop_num_estimator(hto_num_ary[hto_a_idx], hto_num_ary[hto_b_idx], shared_num)
                 estimated_drop_num_ary.append(estimated_drop_num)
 
 
@@ -168,7 +112,7 @@ def obtain_HTO_cell_n_drop_num(data_df, base_bv_array, sample_num, estimated_tot
 
         for hto_idx in range(sample_num):
             hto_num = hto_num_ary[hto_idx]
-            cell_num = param_estimator.cell_num_estimator(hto_num, captured_drop_num, capture_rate)
+            cell_num = estimator.cell_num_estimator(hto_num, captured_drop_num, capture_rate)
             HTO_num_ary.append(cell_num)
 
         total_cell_num = sum(HTO_num_ary)

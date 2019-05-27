@@ -140,3 +140,10 @@ if __name__ == "__main__":
 
     classify_drops(data, confidence_threshold)
 
+
+def count_by_class(data_df, base_bv_array):
+    count_ary = []
+    for i in range(1, len(base_bv_array) + 1):
+        count_ary.append((data_df["Cluster_id"] == i).sum())
+
+    return count_ary
