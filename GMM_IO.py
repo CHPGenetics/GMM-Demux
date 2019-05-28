@@ -1,49 +1,54 @@
 from scipy.io import mmread
-
+import pandas as pd
+import os
 from sys import argv
-from sys import exit 
+import tarfile
+import gzip
+from scipy import stats
+import numpy as np
 
-import pandas
+pd.options.mode.chained_assignment = None
+                                                                                                                        
+def clr_norm(data_df):
+    for hto in data_df.columns.values:
+        compensated_values = data_df.loc[:,hto].values + 1
+        gmean = stats.gmean(compensated_values)
+        print(gmean)
 
-if len(argv) != 7:
-    print("USAGE: script <dir_name> <num_ADT> <num_HTO> <RNA_name> <ADT_name> <HTO_name>")
-    exit()
+        data_df.loc[:,hto] = np.log(np.true_divide(compensated_values, gmean))
+
+    return data_df
+
+
+def read_cellranger(path, hto_array):
+    mtx_file = gzip.open(os.path.join(path, 'matrix.mtx.gz'), 'r')
+    cell_matrix = (mmread(mtx_file))
+    cell_matrix = cell_matrix.todense()
+
+    name_file = gzip.open(os.path.join(path, 'barcodes.tsv.gz'), 'r')
+    cell_names = name_file.read().splitlines()
+    cell_names = [name.decode("utf-8") for name in cell_names]
+
+    feature_file = gzip.open(os.path.join(path, 'features.tsv.gz'), 'r')
+    features = feature_file.read().splitlines()
+    features = [feature.decode("utf-8").split('\t')[1] for feature in features]
+
+    full_df = pd.DataFrame(cell_matrix, features, cell_names).T
+    #print(full_df)
+
+    data_df = full_df[hto_array]
+
+    data_df.to_csv("debug.csv")
+
+    data_df = clr_norm(data_df)
+
+    print(data_df)
+
+    return full_df, data_df
+
 
 dir_name = argv[1]
+hto_array = argv[2].split(',')
+print(hto_array)
 
-if dir_name[-1] != '/':
-    dir_name = dir_name + '/'
-
-cell_matrix = (mmread(dir_name + 'matrix.mtx'))
-cell_matrix = cell_matrix.todense()
-
-cell_names = open(dir_name + "barcodes.tsv").read().splitlines()
-
-features = open(dir_name + "genes.tsv").read().splitlines()
-
-data = pandas.DataFrame(cell_matrix, features, cell_names).T
-
-num_of_ADT = int(argv[2])
-num_of_HTO = int(argv[3])
-
-#RNA_data = data.loc[:,data.columns.values.tolist()[:-(num_of_ADT+num_of_HTO)]]
-#ADT_data = data.loc[:,data.columns.values.tolist()[-(num_of_ADT+num_of_HTO):-num_of_HTO]]
-HTO_data = data.loc[:,data.columns.values.tolist()[-num_of_HTO:]]
-
-#RNA_columns = RNA_data.columns.to_series().astype(str)
-#ADT_columns = ADT_data.columns.to_series().astype(str)
-HTO_columns = HTO_data.columns.to_series().astype(str)
-
-#RNA_columns_new = RNA_columns.apply(lambda x: x.split('\t')[1])
-#ADT_columns_new = ADT_columns.apply(lambda x: x.split('\t')[0])
-HTO_columns_new = HTO_columns.apply(lambda x: x.split('\t')[0])
-
-#RNA_data.columns = RNA_columns_new
-#ADT_data.columns = ADT_columns_new
-HTO_data.columns = HTO_columns_new
-
-#RNA_data.to_csv(argv[4])
-#ADT_data.to_csv(argv[5])
-HTO_data.to_csv(argv[6])
-
-#print(data.T)
+read_cellranger(dir_name, hto_array)
