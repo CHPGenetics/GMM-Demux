@@ -15,7 +15,7 @@ Hongyi Xin <xhongyi@pitt.edu>
 ```bash
 python3 GMM-demux.py <cell_hashing_path> <HTO_names> <estimated_cell_num>
 ```
-MSM-free droplets are stored in *GMM_Demux_mtx* by default.
+MSM-free droplets are stored in folder *GMM_Demux_mtx* by default.
 
 ## Example Usage
 An example cell hashing data is provided in *example_input*. <HTO_names> can be obtained from the features.tsv file.
