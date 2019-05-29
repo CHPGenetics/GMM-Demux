@@ -101,16 +101,16 @@ def store_simplified_classify_result(data_df, class_name_array, path, sample_num
     if not os.path.exists(path):
         os.makedirs(path)
 
-    print(simplified_df)
+    #print(simplified_df)
 
     MSM_idx = data_df.index[(data_df["Cluster_id"] > sample_num).nonzero()[0]]
-    print(MSM_idx)
+    #print(MSM_idx)
     simplified_df.loc[MSM_idx, "Cluster_id"] = sample_num + 1
     unclear_idx = data_df.index[(data_df["Confidence"] < confidence_threshold).nonzero()[0]]
-    print(unclear_idx)
+    #print(unclear_idx)
     simplified_df.loc[unclear_idx, "Cluster_id"] = sample_num + 2
 
-    print(simplified_df)
+    #print(simplified_df)
 
     classify_file_name = os.path.join(path, "GMM_simplified.csv")
     config_file_name = os.path.join(path, "GMM_simplified.config")
@@ -128,7 +128,7 @@ def store_simplified_classify_result(data_df, class_name_array, path, sample_num
 
 def purify_droplets(data_df, confidence_threshold):
     drop_idx = data_df.index[((data_df["Confidence"] < confidence_threshold) | (data_df["Cluster_id"] == 0)).nonzero()[0]]
-    print((data_df["Cluster_id"] == 0).nonzero()[0])
+    #print((data_df["Cluster_id"] == 0).nonzero()[0])
     purified_df = data_df.drop(drop_idx)
     return purified_df
 
@@ -154,15 +154,5 @@ def get_SSD_count_ary(data_df, SSD_idx, sample_num):
         SSD_count_ary.append((SSD_df["Cluster_id"] == i).sum())
 
     return SSD_count_ary
-
-
-if __name__ == "__main__":
-    data_path = argv[1]
-    confidence_threshold = float(argv[2])
-
-    data = pd.read_csv(data_path, index_col = 0)
-
-    classify_drops(data, confidence_threshold)
-
 
 

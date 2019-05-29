@@ -46,8 +46,8 @@ def cell_num_estimator(a_num, captured_drop_num, capture_rate):
     estimated_drop_num = captured_drop_num / capture_rate
     base = 1 - 1 / estimated_drop_num
     power = 1 - a_num / captured_drop_num
-    print("power:", power)
-    print("base:", base)
+    #print("power:", power)
+    #print("base:", base)
     cell_num = log(power, base)
     return cell_num
 
@@ -59,7 +59,7 @@ def drop_num_estimator(a_num, b_num, shared_num):
 
 def compute_shared_num(drop_num, A_num, B_num):
     A_rate = compute_mix_rate(drop_num, B_num) 
-    print("A_rate: ", A_rate)
+    #print("A_rate: ", A_rate)
     shared_num = A_rate *  A_num
     return shared_num
 

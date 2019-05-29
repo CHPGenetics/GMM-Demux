@@ -116,8 +116,8 @@ def obtain_HTO_cell_n_drop_num(data_df, base_bv_array, sample_num, estimated_tot
             HTO_num_ary.append(cell_num)
 
         total_cell_num = sum(HTO_num_ary)
-        print("total_cell_num: ", total_cell_num)
-        print("abs(total_cell_num - estimated_total_cell_num): ", abs(total_cell_num - estimated_total_cell_num))
+        #print("total_cell_num: ", total_cell_num)
+        #print("abs(total_cell_num - estimated_total_cell_num): ", abs(total_cell_num - estimated_total_cell_num))
 
         if (abs(total_cell_num - estimated_total_cell_num) > diff_num):
             break

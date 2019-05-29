@@ -35,23 +35,3 @@ def get_shared_cell_num(high_array, low_array, high_ary_idx, all_ary_idx, thresh
     residual_idx = get_shared_cell_idx(high_array, low_array, high_ary_idx, all_ary_idx, threshold) 
     return len(residual_idx)
 
-
-if __name__ == "__main__":
-
-    data = pd.read_csv(argv[1], index_col = 0)
-
-    (high_array, low_array) = classify_drops.obtain_arrays(data)
-
-    multi_threshold = float(argv[2])
-    single_threshold = float(argv[3])
-
-    high_ary_idx = list(map(int, argv[4].split(',')))
-    all_ary_idx = list(map(int, argv[5].split(',')))
-
-    all_idx = []
-    for idx in all_ary_idx:
-        all_idx.append(get_HTO_cell_num(high_array[idx], single_threshold))
-
-    print(all_idx)
-
-    print(get_shared_cell_num(high_array, low_array, high_ary_idx, all_ary_idx, multi_threshold))

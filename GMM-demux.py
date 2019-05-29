@@ -46,7 +46,7 @@ GEM_num = GMM_df.shape[0]
 sample_num = GMM_df.shape[1]
 
 base_bv_array = compute_venn.obtain_base_bv_array(sample_num)
-print([int(i) for i in base_bv_array])
+#print([int(i) for i in base_bv_array])
 (high_array, low_array) = classify_drops.obtain_arrays(GMM_df)
 
 # Obtain classification result
@@ -70,6 +70,7 @@ purified_df = classify_drops.purify_droplets(GMM_full_df, confidence_threshold)
 SSD_idx = classify_drops.obtain_SSD_list(purified_df, sample_num)
 
 # Store SSD result
+print("***MSM-free droplets are stored in folder", output_path, "\n")
 SSD_df = GMM_IO.store_cellranger(full_df, SSD_idx, output_path)
 
 # Infer parameters
@@ -121,6 +122,7 @@ sample_df = pd.DataFrame(data=[
 print(sample_df)
 
 if args.report:
+    print("\n\n***Summary report is stored in folder", args.report)
     with open(args.report, "w") as report_file:
         report_file.write("==============================Full Report==============================\n")
     with open(args.report, "a") as report_file:

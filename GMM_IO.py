@@ -15,7 +15,7 @@ def clr_norm(data_df):
     for hto in data_df.columns.values:
         compensated_values = data_df.loc[:,hto].values + 1
         gmean = stats.gmean(compensated_values)
-        print(gmean)
+        #print(gmean)
 
         data_df.loc[:,hto] = np.log(np.true_divide(compensated_values, gmean))
 
@@ -44,7 +44,7 @@ def read_cellranger(path, hto_array):
 
     data_df = clr_norm(data_df)
 
-    print(data_df)
+    #print(data_df)
 
     return full_df, data_df
 
@@ -58,7 +58,7 @@ def store_cellranger(data_df, SSD_idx, path):
     SSD_df = data_df.loc[SSD_idx,:]
     mmwrite(mtx_file, csr_matrix(SSD_df.T.values) )
 
-    print(SSD_df)
+    #print(SSD_df)
 
     feature_file = gzip.open(os.path.join(path, 'features.tsv.gz'), 'wt')
     for feature in SSD_df.columns.values:
