@@ -1,4 +1,4 @@
-from scipy.io import mmread
+from scipy.io import mmread, mmwrite
 import pandas as pd
 import os
 from sys import argv
@@ -6,6 +6,8 @@ import tarfile
 import gzip
 from scipy import stats
 import numpy as np
+import os
+from scipy.sparse import csr_matrix
 
 pd.options.mode.chained_assignment = None
                                                                                                                         
@@ -25,13 +27,13 @@ def read_cellranger(path, hto_array):
     cell_matrix = (mmread(mtx_file))
     cell_matrix = cell_matrix.todense()
 
-    name_file = gzip.open(os.path.join(path, 'barcodes.tsv.gz'), 'r')
+    name_file = gzip.open(os.path.join(path, 'barcodes.tsv.gz'), 'rt')
     cell_names = name_file.read().splitlines()
-    cell_names = [name.decode("utf-8") for name in cell_names]
+    cell_names = [name for name in cell_names]
 
-    feature_file = gzip.open(os.path.join(path, 'features.tsv.gz'), 'r')
+    feature_file = gzip.open(os.path.join(path, 'features.tsv.gz'), 'rt')
     features = feature_file.read().splitlines()
-    features = [feature.decode("utf-8").split('\t')[1] for feature in features]
+    features = [(feature.split('\t')[1] if (len(feature.split('\t')) > 1) else feature) for feature in features]
 
     full_df = pd.DataFrame(cell_matrix, features, cell_names).T
     #print(full_df)
@@ -47,8 +49,25 @@ def read_cellranger(path, hto_array):
     return full_df, data_df
 
 
-dir_name = argv[1]
-hto_array = argv[2].split(',')
-print(hto_array)
+def store_cellranger(data_df, SSD_idx, path = None):
+    if path is None:
+        path = "GMM_Demux_mtx"
 
-read_cellranger(dir_name, hto_array)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    mtx_file = gzip.open(os.path.join(path, 'matrix.mtx.gz'), 'w')
+
+    SSD_df = data_df.loc[SSD_idx,:]
+    mmwrite(mtx_file, csr_matrix(SSD_df.T.values) )
+
+    print(SSD_df)
+
+    feature_file = gzip.open(os.path.join(path, 'features.tsv.gz'), 'wt')
+    for feature in SSD_df.columns.values:
+        feature_file.write(feature + "\n")
+
+    cell_file = gzip.open(os.path.join(path, 'barcodes.tsv.gz'), 'wt')
+    for name in SSD_df.index.values:
+        cell_file.write(name + "\n")
+

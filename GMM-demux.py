@@ -8,14 +8,15 @@ import pandas as pd
 import compute_venn
 import estimator
 import classify_drops
-import GMM_io
+import GMM_IO
 from sys import argv
 import sys
 
 ####### Parsing parameters and preparing data #######
-data = pd.read_csv(argv[1], index_col = 0)
-estimated_total_cell_num = int(argv[2])
-confidence_threshold = float(argv[3])
+#data = pd.read_csv(argv[1], index_col = 0)
+full_df, data = GMM_IO.read_cellranger(argv[1], argv[2].split(','))
+estimated_total_cell_num = int(argv[3])
+confidence_threshold = float(argv[4])
 store_path = "./result"
 
 ####### Run classifier #######
@@ -39,6 +40,10 @@ classify_drops.store_simplified_classify_result(GMM_full_df, class_name_ary, sto
 purified_df = classify_drops.purify_droplets(GMM_full_df, confidence_threshold)
 
 # Select target samples
+SSD_idx = classify_drops.obtain_SSD_list(purified_df, sample_num)
+
+# Store SSD result
+GMM_IO.store_cellranger(full_df, SSD_idx)
 
 # Infer parameters
 (cell_num_ary, drop_num, capture_rate) = compute_venn.obtain_HTO_cell_n_drop_num(purified_df, base_bv_array, sample_num, estimated_total_cell_num, confidence_threshold)

@@ -1,4 +1,5 @@
 import numpy as np
+
 import pandas as pd
 from scipy import stats
 from sys import argv
@@ -132,6 +133,19 @@ def purify_droplets(data_df, confidence_threshold):
     return purified_df
 
 
+def obtain_SSD_list(data_df, sample_num):
+    SSD_idx = data_df.index[data_df["Cluster_id"] <= sample_num]
+    return SSD_idx
+
+
+def count_by_class(data_df, base_bv_array):
+    count_ary = []
+    for i in range(1, len(base_bv_array) + 1):
+        count_ary.append((data_df["Cluster_id"] == i).sum())
+
+    return count_ary
+
+
 if __name__ == "__main__":
     data_path = argv[1]
     confidence_threshold = float(argv[2])
@@ -141,9 +155,4 @@ if __name__ == "__main__":
     classify_drops(data, confidence_threshold)
 
 
-def count_by_class(data_df, base_bv_array):
-    count_ary = []
-    for i in range(1, len(base_bv_array) + 1):
-        count_ary.append((data_df["Cluster_id"] == i).sum())
 
-    return count_ary
