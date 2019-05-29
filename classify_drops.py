@@ -146,6 +146,16 @@ def count_by_class(data_df, base_bv_array):
     return count_ary
 
 
+def get_SSD_count_ary(data_df, SSD_idx, sample_num):
+    SSD_df = data_df.loc[SSD_idx,:]
+    SSD_count_ary = []
+
+    for i in range(1, sample_num + 1):
+        SSD_count_ary.append((SSD_df["Cluster_id"] == i).sum())
+
+    return SSD_count_ary
+
+
 if __name__ == "__main__":
     data_path = argv[1]
     confidence_threshold = float(argv[2])

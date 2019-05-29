@@ -49,10 +49,7 @@ def read_cellranger(path, hto_array):
     return full_df, data_df
 
 
-def store_cellranger(data_df, SSD_idx, path = None):
-    if path is None:
-        path = "GMM_Demux_mtx"
-
+def store_cellranger(data_df, SSD_idx, path):
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -70,4 +67,3 @@ def store_cellranger(data_df, SSD_idx, path = None):
     cell_file = gzip.open(os.path.join(path, 'barcodes.tsv.gz'), 'wt')
     for name in SSD_df.index.values:
         cell_file.write(name + "\n")
-
