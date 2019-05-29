@@ -32,19 +32,17 @@ def read_cellranger(path, hto_array):
     cell_names = [name for name in cell_names]
 
     feature_file = gzip.open(os.path.join(path, 'features.tsv.gz'), 'rt')
-    features = feature_file.read().splitlines()
+    simple_features = feature_file.read().splitlines()
     features = [(feature.split('\t')[1] if (len(feature.split('\t')) > 1) else feature) for feature in features]
 
-    full_df = pd.DataFrame(cell_matrix, features, cell_names).T
+    full_df = pd.DataFrame(cell_matrix, simple_features, cell_names).T
     #print(full_df)
 
     data_df = full_df[hto_array]
 
-    data_df.to_csv("debug.csv")
-
     data_df = clr_norm(data_df)
 
-    #print(data_df)
+    full_df.columns = features
 
     return full_df, data_df
 
