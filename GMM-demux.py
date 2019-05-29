@@ -11,13 +11,28 @@ import classify_drops
 import GMM_IO
 from sys import argv
 import sys
+import argparse
 
 ####### Parsing parameters and preparing data #######
+parser = argparse.ArgumentParser()
+   
+parser.add_argument('input_path', help = "The input path of mtx files from cellRanger pipeline.")
+parser.add_argument('hto_array', help = "Names of the HTO tags, separated with ','.")
+parser.add_argument('cell_num', help = "Estimated total number of cells across all HTO samples.")
+
+input_path = parser.input_path
+hto_array = parser.hto_array
+estimated_total_cell_num = int(parser.cell_num)
+
+
 #data = pd.read_csv(argv[1], index_col = 0)
+#full_df, data = GMM_IO.read_cellranger(argv[1], argv[2].split(','))
+#estimated_total_cell_num = int(argv[3])
+#confidence_threshold = float(argv[4])
+
 full_df, data = GMM_IO.read_cellranger(argv[1], argv[2].split(','))
-estimated_total_cell_num = int(argv[3])
-confidence_threshold = float(argv[4])
 store_path = "./result"
+confidence_threshold = 0.8 
 
 ####### Run classifier #######
 GEM_num = data.shape[0]
