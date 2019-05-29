@@ -1,5 +1,6 @@
 # GMM-Demux 
 A Gaussian Mixture Model based software for processing cell hashing data.
+![Example classification result. Orange dots are multi-sample multiplets.](GMM_simplified.png)
 
 ## Description
 GMM-Demux removes Multi-Sample-Multiplets (MSMs) in a cell hashing dataset and estimates the fraction of Same-Sample-Multiplets (SSMs) and singlets in the remaining dataset.
