@@ -5,10 +5,10 @@ import warnings
 warnings.warn = warn
 
 import pandas as pd
-import compute_venn
-import estimator
-import classify_drops
-import GMM_IO
+from GMM_Demux import compute_venn
+from GMM_Demux import estimator
+from GMM_Demux import classify_drops
+from GMM_Demux import GMM_IO
 from sys import argv
 import sys
 import argparse
@@ -133,3 +133,6 @@ def main():
         with open(args.report, "a") as report_file:
             report_file.write(tabulate(sample_df, headers='keys', tablefmt='psql'))
 
+
+if __name__ == "__main__":
+    main()

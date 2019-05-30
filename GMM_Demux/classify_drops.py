@@ -6,8 +6,8 @@ from sys import argv
 from sklearn.mixture import GaussianMixture
 import os
 
-import check_multi_comp
-import compute_venn
+from GMM_Demux import check_multi_comp
+from GMM_Demux import compute_venn
 
 
 def obtain_arrays(data):

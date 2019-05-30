@@ -1,12 +1,11 @@
-import estimator
-import classify_drops
+from GMM_Demux import estimator
+from GMM_Demux import classify_drops
 import BitVector
 import numpy as np
 
 from sys import argv
 import pandas as pd
 from statistics import mean
-from matplotlib import pyplot as plt
 
 # Returns the binary array representing all combinations of cells
 def obtain_base_bv_array(sample_num):

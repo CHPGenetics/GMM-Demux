@@ -1,4 +1,3 @@
-import classify_drops
 import pandas as pd
 from sys import argv
 import numpy as np

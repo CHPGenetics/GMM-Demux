@@ -2,7 +2,6 @@ from scipy.io import mmread, mmwrite
 import pandas as pd
 import os
 from sys import argv
-import tarfile
 import gzip
 from scipy import stats
 import numpy as np
@@ -32,8 +31,8 @@ def read_cellranger(path, hto_array):
     cell_names = [name for name in cell_names]
 
     feature_file = gzip.open(os.path.join(path, 'features.tsv.gz'), 'rt')
-    simple_features = feature_file.read().splitlines()
-    features = [(feature.split('\t')[1] if (len(feature.split('\t')) > 1) else feature) for feature in features]
+    features = feature_file.read().splitlines()
+    simple_features = [(feature.split('\t')[1] if (len(feature.split('\t')) > 1) else feature) for feature in features]
 
     full_df = pd.DataFrame(cell_matrix, simple_features, cell_names).T
     #print(full_df)
