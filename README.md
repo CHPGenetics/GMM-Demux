@@ -19,11 +19,22 @@ GMM-Demux removes Multi-Sample-Multiplets (MSMs) in a cell hashing dataset and e
 Hongyi Xin <xhongyi@pitt.edu>
 
 
+## Requirement
+
+GMM-Demux requires python3 (>3.5) installed in the system.
+
 ## Install
 
-Install GMM-demux using [setuptools](https://packaging.python.org/tutorials/installing-packages/) and pip3.
+GMM-Demux can be directly installed from PIPy. Alternatively, a user can build and install it locally.
 
+* Install GMM-Demux from PIPy.
 ```bash
+pip3 install --user GMM_Demux
+```
+
+* Install GMM-Demux locally using [setuptools](https://packaging.python.org/tutorials/installing-packages/) and pip3.
+```bash
+cd <GMM-Demux dir>
 python3 setup.py sdist bdist_wheel
 pip3 install --user . 
 ```
