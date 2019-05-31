@@ -3,7 +3,7 @@ A Gaussian Mixture Model based software for processing cell hashing data.
 
 Blow shows an example classification result. Orange dots are multi-sample multiplets.
 
-![GMM-Demux example](GMM_simplified.png){width : 250px}
+![GMM-Demux example](GMM_simplified.png = 250x)
 
 ## Description
 GMM-Demux removes Multi-Sample-Multiplets (MSMs) in a cell hashing dataset and estimates the fraction of Same-Sample-Multiplets (SSMs) and singlets in the remaining dataset.
@@ -45,7 +45,7 @@ pip3 install --user .
 
 ## Usage
 
-Once installed, the github folder is no longer needed. Instead, GMM-Demux is directly accessible with the ```bash GMM-demux``` command.
+Once installed, the github folder is no longer needed. Instead, GMM-Demux is directly accessible with the ```GMM-demux``` command.
 ```bash
 GMM-demux <cell_hashing_path> <HTO_names> <estimated_cell_num>
 ```
@@ -54,7 +54,7 @@ MSM-free droplets are stored in folder *GMM_Demux_mtx* by default.
 ## Example Usage
 An example cell hashing data is provided in *example_input*. <HTO_names> can be obtained from the features.tsv file.
 ```bash
-python3 GMM-demux.py example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 35685
+GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 35685
 ```
 
 <HTO_names> are obtained from the features.tsv file. An example is shown below.
@@ -81,4 +81,4 @@ python3 GMM-demux.py example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,H
 ## Online Cell Hashing Experiment Planner
 A GMM-Demux based online cell hashing experiment planner is publically accessible at [here](https://www.pitt.edu/~wec47/gmmdemux.html).
 
-[![Online explanner example](planner.png){width : 300px}](https://www.pitt.edu/~wec47/gmmdemux.html)
+[![Online explanner example](planner.png = 300x)](https://www.pitt.edu/~wec47/gmmdemux.html)
