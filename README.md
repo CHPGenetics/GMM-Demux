@@ -25,7 +25,7 @@ GMM-Demux requires python3 (>3.5) installed in the system.
 
 ## Install
 
-GMM-Demux can be directly installed from PIPy. Alternatively, a user can build and install it locally.
+GMM-Demux can be directly installed from PIPy. Or it can be built and installed locally.
 
 * Install GMM-Demux from PIPy.
 ```bash
