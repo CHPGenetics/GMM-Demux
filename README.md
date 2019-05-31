@@ -3,7 +3,7 @@ A Gaussian Mixture Model based software for processing cell hashing data.
 
 Blow shows an example classification result. Orange dots are multi-sample multiplets.
 
-![GMM-Demux example](GMM_simplified.png =250x)
+![GMM-Demux example](GMM_simplified.png){width=250px}
 
 ## Description
 GMM-Demux removes Multi-Sample-Multiplets (MSMs) in a cell hashing dataset and estimates the fraction of Same-Sample-Multiplets (SSMs) and singlets in the remaining dataset.
@@ -81,4 +81,4 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 
 ## Online Cell Hashing Experiment Planner
 A GMM-Demux based online cell hashing experiment planner is publically accessible at [here](https://www.pitt.edu/~wec47/gmmdemux.html).
 
-[![Online explanner example](planner.png =300x)](https://www.pitt.edu/~wec47/gmmdemux.html)
+[![Online explanner example](planner.png)](https://www.pitt.edu/~wec47/gmmdemux.html){width=300px}
