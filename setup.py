@@ -31,6 +31,7 @@ setuptools.setup(
         "tabulate",
         "argparse",
         "statistics",
-        "BitVector"
+        "BitVector",
+        "sklearn"
     ]
 )
