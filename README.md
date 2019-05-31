@@ -3,7 +3,7 @@ A Gaussian Mixture Model based software for processing cell hashing data.
 
 Blow shows an example classification result. Orange dots are multi-sample multiplets.
 
-![GMM-Demux example](GMM_simplified.png)
+![GMM-Demux example](GMM_simplified.png){width : 250px}
 
 ## Description
 GMM-Demux removes Multi-Sample-Multiplets (MSMs) in a cell hashing dataset and estimates the fraction of Same-Sample-Multiplets (SSMs) and singlets in the remaining dataset.
@@ -11,6 +11,9 @@ GMM-Demux removes Multi-Sample-Multiplets (MSMs) in a cell hashing dataset and e
 ## Features
 * Remove cell-hashing-identifiable multiplets from the dataset.
 * Estimate the fraction of cell-hashing-unidentifiable multiplets in the remaining dataset (the RSSM value).
+
+## Example Dataset
+* An example cell hashing data is provided in the *example_input* folder. It contains the per drop HTO count matrix of a 4-sample cell hashing library prep.
 
 # Authors
  Hongyi Xin, Qi Yan, Yale Jiang, Jiadi Luo, Carla Erb, Richard Duerr, Kong Chen* and Wei Chen*
@@ -21,16 +24,17 @@ Hongyi Xin <xhongyi@pitt.edu>
 
 ## Requirement
 
-GMM-Demux requires python3 (>3.5) installed in the system.
+GMM-Demux requires python3 (>3.5).
 
 ## Install
 
-GMM-Demux can be directly installed from PIPy. Or it can be built and installed locally.
+GMM-Demux can be directly installed from PyPi. Or it can be built and installed locally.
 
-* Install GMM-Demux from PIPy.
+* Install GMM-Demux from PyPi.
 ```bash
 pip3 install --user GMM_Demux
 ```
+If choose to install from PyPi, it is unnecessary to download GMM-Demux from github. However, we still recommend downloading the example dataset to try out GMM-Demux.
 
 * Install GMM-Demux locally using [setuptools](https://packaging.python.org/tutorials/installing-packages/) and pip3.
 ```bash
@@ -40,6 +44,8 @@ pip3 install --user .
 ```
 
 ## Usage
+
+Once installed, the github folder is no longer needed. Instead, GMM-Demux is directly accessible with the ```bash GMM-demux``` command.
 ```bash
 GMM-demux <cell_hashing_path> <HTO_names> <estimated_cell_num>
 ```
@@ -75,4 +81,4 @@ python3 GMM-demux.py example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,H
 ## Online Cell Hashing Experiment Planner
 A GMM-Demux based online cell hashing experiment planner is publically accessible at [here](https://www.pitt.edu/~wec47/gmmdemux.html).
 
-[![Online explanner example](planner.png)](https://www.pitt.edu/~wec47/gmmdemux.html)
+[![Online explanner example](planner.png){width : 300px}](https://www.pitt.edu/~wec47/gmmdemux.html)
