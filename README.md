@@ -64,4 +64,4 @@ python3 GMM-demux.py example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,H
 ## Online Cell Hashing Experiment Planner
 A GMM-Demux based online cell hashing experiment planner is publically accessible at [link](https://www.pitt.edu/~wec47/gmmdemux.html).
 
-![Online explanner example](planner.png)(https://www.pitt.edu/~wec47/gmmdemux.html)
+[![Online explanner example](planner.png)](https://www.pitt.edu/~wec47/gmmdemux.html)
