@@ -60,7 +60,7 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 
 
 <HTO_names> are obtained from the features.tsv file. An example is shown below.
 
-![HTO names example](features.jpg)
+![HTO names example](features.png)
 
 ## Optional Arguments
 * -h: show help information.
@@ -72,7 +72,7 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 
 ## Output Values
 * CellRanger MSM-free drops, in MTX format. Compatible with CellRanger 3.0.
 * Dataset summary. An example summary is shown below.
-![Summary example](summary.jpg)
+![Summary example](summary.png)
 
 ## Output Explanation
 * MSM denotes the percentage of identified and removed multiplets among all droplets.
