@@ -40,6 +40,10 @@ An example cell hashing data is provided in *example_input*. <HTO_names> can be 
 python3 GMM-demux.py example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 35685
 ```
 
+<HTO_names> are obtained from the features.tsv file. An example is shown below.
+
+![HTO names example](features.jpg)
+
 ## Optional Arguments
 * -h: show help information.
 * -f FULL, --full FULL  Generate the full classification report. Require a path argument.
@@ -52,8 +56,12 @@ python3 GMM-demux.py example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,H
 * Dataset summary. An example summary is shown below.
 ![Summary example](summary.jpg)
 
+## Output Explanation
+* MSM denotes the percentage of identified and removed multiplets among all droplets.
+* SSM denotes the percentage of unidentifiable multiplets among all droplets.
+* RSSM denotes the percentage of multiplets among the output droplets (after removing identifiable multiplets). RSSM **measures the quality of the cell hashing dataset**.
 
 ## Online Cell Hashing Experiment Planner
 A GMM-Demux based online cell hashing experiment planner is publically accessible at [link](https://www.pitt.edu/~wec47/gmmdemux.html).
 
-![Online explanner example](planner.png)
+![Online explanner example](planner.png)(https://www.pitt.edu/~wec47/gmmdemux.html)
