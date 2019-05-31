@@ -63,6 +63,8 @@ def main():
         classify_drops.store_simplified_classify_result(GMM_full_df, class_name_ary, args.simplified, sample_num, confidence_threshold)
 
     ####### Estimate SSM #######
+    # Count bad drops
+    negative_num, unclear_num = classify_drops.count_bad_droplets(GMM_full_df, confidence_threshold)
     # Clean up bad drops
     purified_df = classify_drops.purify_droplets(GMM_full_df, confidence_threshold)
 
@@ -91,8 +93,8 @@ def main():
             "MSM": "%5.2f" % (MSM_rate * 100),
             "SSM": "%5.2f" % (SSM_rate * 100),
             "RSSM": "%5.2f" % (estimator.compute_relative_SSM_rate(SSM_rate, singlet_rate) * 100),
-            "Negative": 0,
-            "Unclear": 0
+            "Negative": "%5.2f" % (negative_num / GMM_full_df.shape[0] * 100),
+            "Unclear": "%5.2f" % (unclear_num / GMM_full_df.shape[0] * 100)
             }
     full_report_columns = [
             "#Drops",

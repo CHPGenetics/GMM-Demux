@@ -133,6 +133,12 @@ def purify_droplets(data_df, confidence_threshold):
     return purified_df
 
 
+def count_bad_droplets(data_df, confidence_threshold):
+    negative_num = (data_df["Cluster_id"] == 0).sum()
+    unclear_num = (data_df["Confidence"] < confidence_threshold).sum()
+    return negative_num, unclear_num
+
+
 def obtain_SSD_list(data_df, sample_num):
     SSD_idx = data_df.index[data_df["Cluster_id"] <= sample_num]
     return SSD_idx
