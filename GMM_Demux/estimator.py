@@ -83,6 +83,7 @@ def compute_SSM_rate_with_cell_num(cell_num, drop_num):
 
 def compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary, sample_num):
     log_probability = 0
+    #probability = 1.0
 
     print(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary)
     
@@ -94,9 +95,12 @@ def compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GE
         print("***GEM_formation_prob:", GEM_formation_prob)
         print("***sample_binom_prob:", sample_binom_prob)
         log_probability += log(sample_binom_prob)
+        #probability *= sample_binom_prob
 
     print(log_probability)
+    #print(probability)
 
     return log_probability
+    #return probability
 
 

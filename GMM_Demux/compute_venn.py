@@ -91,16 +91,18 @@ def experiment_params_wrapper(params, HTO_GEM_ary, sample_num):
     capture_rate = params[1]
     cell_num_ary = params[2:]
 
+    drop_num *= 100
+    capture_rate = capture_rate / 1000
     return -estimator.compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary, sample_num)
 
 
 def obtain_experiment_params(HTO_GEM_ary, sample_num, estimated_total_cell_num):
-    drop_num = 80000
-    capture_rate = 0.5
+    drop_num = 800
+    capture_rate = 500
     cell_num_ary = [estimated_total_cell_num / sample_num for i in range(sample_num)]
     params0 = [drop_num, capture_rate, *cell_num_ary]
 
-    bounds = Bounds([1, 0.0] + [0 for i in range(sample_num)], [np.inf, 1.0] + [np.inf for i in range(sample_num)])
+    bounds = Bounds([1, 0.0] + [0 for i in range(sample_num)], [np.inf, 1000.0] + [np.inf for i in range(sample_num)])
     linear_constraint = LinearConstraint([[0, 0] + [1 for i in range(sample_num)]], [estimated_total_cell_num * 0.99], [estimated_total_cell_num * 1.01])
     constraint_func = [
             {"type": "ineq", "fun": lambda x: sum(x[2:]) - estimated_total_cell_num * 0.99},
@@ -110,7 +112,7 @@ def obtain_experiment_params(HTO_GEM_ary, sample_num, estimated_total_cell_num):
     # Debug
     #HTO_GEM_ary[0] /= 10
 
-    res = minimize(experiment_params_wrapper, params0, args=(HTO_GEM_ary, sample_num), constraints=constraint_func, bounds=bounds, options={'verbose': 1})
+    res = minimize(experiment_params_wrapper, params0, args=(HTO_GEM_ary, sample_num), method='SLSQP', constraints=constraint_func, bounds=bounds, options={'verbose': 1, 'eps': 5})
 
     print(res.x)
 
