@@ -1,5 +1,7 @@
 from math import pow
-from math import log 
+from math import log
+from scipy.stats import binom
+from math import log
 
 def compute_multiplet_rates_asymp(cell_num, sample_num, drop_num):
     no_drop_rate = (1 - 1 / drop_num)
@@ -77,4 +79,24 @@ def compute_SSM_rate_with_cell_num(cell_num, drop_num):
     drop_with_cells = (1 - pow(no_drop_rate, cell_num)) * drop_num
     SSM_rate = 1 - singlet_drops / drop_with_cells
     return SSM_rate
+
+
+def compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary, sample_num):
+    log_probability = 0
+
+    print(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary)
+    
+    for sample_idx in range(sample_num):
+        ori_GEM_num = HTO_GEM_ary[sample_idx] / capture_rate
+        GEM_formation_prob = compute_mix_rate(int(drop_num), int(cell_num_ary[sample_idx]))
+        sample_binom_prob = binom.pmf(int(ori_GEM_num), int(drop_num), GEM_formation_prob)
+        print("***ori_GEM_num:", ori_GEM_num)
+        print("***GEM_formation_prob:", GEM_formation_prob)
+        print("***sample_binom_prob:", sample_binom_prob)
+        log_probability += log(sample_binom_prob)
+
+    print(log_probability)
+
+    return log_probability
+
 

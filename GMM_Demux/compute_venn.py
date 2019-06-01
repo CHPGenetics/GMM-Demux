@@ -6,6 +6,9 @@ import numpy as np
 from sys import argv
 import pandas as pd
 from statistics import mean
+from scipy.optimize import minimize
+from scipy.optimize import Bounds
+from scipy.optimize import LinearConstraint
 
 # Returns the binary array representing all combinations of cells
 def obtain_base_bv_array(sample_num):
@@ -65,6 +68,51 @@ def gather_multiplet_rates(venn_values, SSM_rate_ary, sample_num):
     MSM_rate = total_MSMs / total_drops
 
     return MSM_rate, SSM_rate, singlet_rate
+
+
+def obtain_HTO_GEM_num(data_df, base_bv_array, sample_num):
+    HTO_GEM_ary = []
+
+    # Obtain hto numbers
+    for i in range(sample_num):
+        GEM_num = 0
+
+        for j in range(len(base_bv_array)):
+            if check_set_bit(base_bv_array[j], i, sample_num):
+                GEM_num += (data_df["Cluster_id"] == j).sum()
+
+        HTO_GEM_ary.append(GEM_num)
+    
+    return HTO_GEM_ary
+
+
+def experiment_params_wrapper(params, HTO_GEM_ary, sample_num):
+    drop_num = params[0]
+    capture_rate = params[1]
+    cell_num_ary = params[2:]
+
+    return -estimator.compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary, sample_num)
+
+
+def obtain_experiment_params(HTO_GEM_ary, sample_num, estimated_total_cell_num):
+    drop_num = 80000
+    capture_rate = 0.5
+    cell_num_ary = [estimated_total_cell_num / sample_num for i in range(sample_num)]
+    params0 = [drop_num, capture_rate, *cell_num_ary]
+
+    bounds = Bounds([1, 0.0] + [0 for i in range(sample_num)], [np.inf, 1.0] + [np.inf for i in range(sample_num)])
+    linear_constraint = LinearConstraint([[0, 0] + [1 for i in range(sample_num)]], [estimated_total_cell_num * 0.99], [estimated_total_cell_num * 1.01])
+    constraint_func = [
+            {"type": "ineq", "fun": lambda x: sum(x[2:]) - estimated_total_cell_num * 0.99},
+            {"type": "ineq", "fun": lambda x: - sum(x[2:]) + estimated_total_cell_num * 1.01}
+            ]
+
+    # Debug
+    #HTO_GEM_ary[0] /= 10
+
+    res = minimize(experiment_params_wrapper, params0, args=(HTO_GEM_ary, sample_num), constraints=constraint_func, bounds=bounds, options={'verbose': 1})
+
+    print(res.x)
 
 
 def obtain_HTO_cell_n_drop_num(data_df, base_bv_array, sample_num, estimated_total_cell_num, confidence_threshold):

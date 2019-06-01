@@ -76,6 +76,10 @@ def main():
     SSD_df = GMM_IO.store_cellranger(full_df, SSD_idx, output_path)
 
     # Infer parameters
+    HTO_GEM_ary = compute_venn.obtain_HTO_GEM_num(purified_df, base_bv_array, sample_num)
+    #(cell_num_ary, drop_num, capture_rate) = compute_venn.obtain_experiment_params(HTO_GEM_ary, sample_num, estimated_total_cell_num)
+    compute_venn.obtain_experiment_params(HTO_GEM_ary, sample_num, estimated_total_cell_num)
+
     (cell_num_ary, drop_num, capture_rate) = compute_venn.obtain_HTO_cell_n_drop_num(purified_df, base_bv_array, sample_num, estimated_total_cell_num, confidence_threshold)
 
     SSM_rate_ary = [estimator.compute_SSM_rate_with_cell_num(cell_num_ary[i], drop_num) for i in range(sample_num)]
