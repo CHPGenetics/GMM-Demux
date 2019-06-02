@@ -77,8 +77,10 @@ def main():
 
     # Infer parameters
     HTO_GEM_ary = compute_venn.obtain_HTO_GEM_num(purified_df, base_bv_array, sample_num)
+    HTO_GEM_ary_main = HTO_GEM_ary[0:sample_num]
     #(cell_num_ary, drop_num, capture_rate) = compute_venn.obtain_experiment_params(HTO_GEM_ary, sample_num, estimated_total_cell_num)
-    compute_venn.obtain_experiment_params(HTO_GEM_ary, sample_num, estimated_total_cell_num)
+    params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_main, sample_num, estimated_total_cell_num)
+    compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary, sample_num, estimated_total_cell_num, params0)
 
     (cell_num_ary, drop_num, capture_rate) = compute_venn.obtain_HTO_cell_n_drop_num(purified_df, base_bv_array, sample_num, estimated_total_cell_num, confidence_threshold)
 

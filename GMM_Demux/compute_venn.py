@@ -7,8 +7,10 @@ from sys import argv
 import pandas as pd
 from statistics import mean
 from scipy.optimize import minimize
+from scipy import optimize 
 from scipy.optimize import Bounds
 from scipy.optimize import LinearConstraint
+from scipy.special import comb
 
 # Returns the binary array representing all combinations of cells
 def obtain_base_bv_array(sample_num):
@@ -74,36 +76,90 @@ def obtain_HTO_GEM_num(data_df, base_bv_array, sample_num):
     HTO_GEM_ary = []
 
     # Obtain hto numbers
-    for i in range(sample_num):
+#    for i in range(sample_num):
+#        GEM_num = 0
+#
+#        for j in range(len(base_bv_array)):
+#            if check_set_bit(base_bv_array[j], i, sample_num):
+#                GEM_num += (data_df["Cluster_id"] == j).sum()
+#
+#        HTO_GEM_ary.append(GEM_num)
+
+    for i in range(1, len(base_bv_array)):
+        print(base_bv_array[i])
         GEM_num = 0
 
         for j in range(len(base_bv_array)):
-            if check_set_bit(base_bv_array[j], i, sample_num):
+            if (base_bv_array[i] & base_bv_array[j] == base_bv_array[i]):
                 GEM_num += (data_df["Cluster_id"] == j).sum()
 
         HTO_GEM_ary.append(GEM_num)
     
+    print(HTO_GEM_ary)
     return HTO_GEM_ary
 
 
-def experiment_params_wrapper(params, HTO_GEM_ary, sample_num):
-    drop_num = params[0]
-    capture_rate = params[1]
-    cell_num_ary = params[2:]
+def experiment_params_wrapper(params, HTO_GEM_ary, sample_num, scaler, base_bv_array, operator):
+    print("***Params: ", params)
+    scaled_params = params.copy()
 
-    drop_num *= 100
-    capture_rate = capture_rate / 1000
-    return -estimator.compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary, sample_num)
+    for i in range(len(scaler)):
+        scaled_params[i] = operator(params[i], scaler[i])
+
+    drop_num = round(scaled_params[0])
+    capture_rate = scaled_params[1]
+    cell_num_ary = [round(cell_num) for cell_num in scaled_params[2:]]
+
+    return -estimator.compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary, base_bv_array, sample_num)
 
 
-def obtain_experiment_params(HTO_GEM_ary, sample_num, estimated_total_cell_num):
-    drop_num = 800
-    capture_rate = 500
+def param_scaling(params, scaler, operator):
+    for i in range(len(scaler)):
+        params[i] = operator(params[i], scaler[i])
+
+    return params
+
+
+def compute_scaler(params):
+    scaler = []
+
+    # Bigger steps for the first 2 params
+    scaler.append(800 / params[0])
+    scaler.append(500 / params[1])
+
+    for param in params[2:]:
+        scaler.append(10000 / param)
+
+    return scaler
+
+
+def obtain_experiment_params(base_bv_array, HTO_GEM_ary, sample_num, estimated_total_cell_num, params0 = None):
+    drop_num = 80000
+    capture_rate = 0.5
     cell_num_ary = [estimated_total_cell_num / sample_num for i in range(sample_num)]
-    params0 = [drop_num, capture_rate, *cell_num_ary]
 
-    bounds = Bounds([1, 0.0] + [0 for i in range(sample_num)], [np.inf, 1000.0] + [np.inf for i in range(sample_num)])
-    linear_constraint = LinearConstraint([[0, 0] + [1 for i in range(sample_num)]], [estimated_total_cell_num * 0.99], [estimated_total_cell_num * 1.01])
+    lower_bound = [1, 0.0] + [0 for i in range(sample_num)]
+    upper_bound = [np.inf, 1.0] + [np.inf for i in range(sample_num)]
+
+    if params0 is None:
+        params0 = [drop_num, capture_rate, *cell_num_ary]
+
+    # Compute scaler
+    #scaler = [0.01, 1000]
+    scaler = compute_scaler(params0)
+
+    print("params before scaling:", params0)
+    # Scale all values
+    params0 = param_scaling(params0, scaler, lambda x, y: x * y)
+    lower_bound = param_scaling(lower_bound, scaler, lambda x, y: x * y)
+    upper_bound = param_scaling(upper_bound, scaler, lambda x, y: x * y)
+
+    print("params:", params0)
+    print("bounds:", lower_bound, upper_bound)
+
+    bounds = Bounds(lower_bound, upper_bound)
+
+    # Linear constraints are not scaled in current version.
     constraint_func = [
             {"type": "ineq", "fun": lambda x: sum(x[2:]) - estimated_total_cell_num * 0.99},
             {"type": "ineq", "fun": lambda x: - sum(x[2:]) + estimated_total_cell_num * 1.01}
@@ -112,9 +168,18 @@ def obtain_experiment_params(HTO_GEM_ary, sample_num, estimated_total_cell_num):
     # Debug
     #HTO_GEM_ary[0] /= 10
 
-    res = minimize(experiment_params_wrapper, params0, args=(HTO_GEM_ary, sample_num), method='SLSQP', constraints=constraint_func, bounds=bounds, options={'verbose': 1, 'eps': 5})
+    res = minimize(experiment_params_wrapper, params0, args=(HTO_GEM_ary, sample_num, scaler, base_bv_array, lambda x,y: x/y), method='SLSQP', constraints=constraint_func, bounds=bounds, options={'verbose': 1, 'eps': 10, 'ftol' : 0.00001})
+    #res = minimize(experiment_params_wrapper, params0, args=(HTO_GEM_ary, sample_num, scaler, base_bv_array, lambda x,y: x/y), method='SLSQP', constraints=constraint_func, bounds=bounds, options={'verbose': 1, 'eps': 5})
 
-    print(res.x)
+    #bounds = [(lower_bound[i], upper_bound[i]) for i in range(len(lower_bound))]
+    #res = optimize.shgo(func=experiment_params_wrapper, args=(HTO_GEM_ary, sample_num, scaler, base_bv_array, lambda x,y: x/y), constraints=constraint_func, bounds=bounds)#, options={'verbose': 1, 'eps': 5})
+    #print(res)
+
+    print(res)
+    final_param = param_scaling(res.x, scaler, lambda x, y: x / y)
+
+    print("-------", final_param)
+    return final_param 
 
 
 def obtain_HTO_cell_n_drop_num(data_df, base_bv_array, sample_num, estimated_total_cell_num, confidence_threshold):

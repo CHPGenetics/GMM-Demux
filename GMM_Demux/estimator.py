@@ -2,6 +2,7 @@ from math import pow
 from math import log
 from scipy.stats import binom
 from math import log
+from GMM_Demux import compute_venn
 
 def compute_multiplet_rates_asymp(cell_num, sample_num, drop_num):
     no_drop_rate = (1 - 1 / drop_num)
@@ -81,20 +82,35 @@ def compute_SSM_rate_with_cell_num(cell_num, drop_num):
     return SSM_rate
 
 
-def compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary, sample_num):
+def compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary, base_bv_array, sample_num):
     log_probability = 0
     #probability = 1.0
+
+    GEM_prob_ary = []
 
     print(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary)
     
     for sample_idx in range(sample_num):
-        ori_GEM_num = HTO_GEM_ary[sample_idx] / capture_rate
-        GEM_formation_prob = compute_mix_rate(int(drop_num), int(cell_num_ary[sample_idx]))
-        sample_binom_prob = binom.pmf(int(ori_GEM_num), int(drop_num), GEM_formation_prob)
+        ori_GEM_num = round(HTO_GEM_ary[sample_idx] / capture_rate)
+        GEM_formation_prob = compute_mix_rate(drop_num, cell_num_ary[sample_idx])
+        GEM_prob_ary.append(GEM_formation_prob)
+
+    for i in range(len(HTO_GEM_ary)):
+        bv_idx = i + 1
+        GEM_formation_prob = 1
+
+        for sample_idx in range(sample_num):
+            if compute_venn.check_set_bit(base_bv_array[bv_idx], sample_idx, sample_num):
+                GEM_formation_prob *= GEM_prob_ary[sample_idx]
+
+        ori_GEM_num = round(HTO_GEM_ary[i] / capture_rate)
+        sample_binom_prob = binom.pmf(ori_GEM_num, drop_num, GEM_formation_prob)
         print("***ori_GEM_num:", ori_GEM_num)
         print("***GEM_formation_prob:", GEM_formation_prob)
         print("***sample_binom_prob:", sample_binom_prob)
-        log_probability += log(sample_binom_prob)
+        print("***log sample_binom_prob:", log(sample_binom_prob))
+        print("***log sample_binom_prob, corrected:", log(sample_binom_prob) * ((1/sample_num) ** (base_bv_array[bv_idx].count_bits() - 1)))
+        log_probability += log(sample_binom_prob) * ((1/sample_num) ** (base_bv_array[bv_idx].count_bits() - 1))
         #probability *= sample_binom_prob
 
     print(log_probability)
