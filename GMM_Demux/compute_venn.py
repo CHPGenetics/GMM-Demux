@@ -75,15 +75,6 @@ def obtain_HTO_GEM_num(data_df, base_bv_array, sample_num):
     HTO_GEM_ary = []
 
     # Obtain hto numbers
-#    for i in range(sample_num):
-#        GEM_num = 0
-#
-#        for j in range(len(base_bv_array)):
-#            if check_set_bit(base_bv_array[j], i, sample_num):
-#                GEM_num += (data_df["Cluster_id"] == j).sum()
-#
-#        HTO_GEM_ary.append(GEM_num)
-
     for i in range(1, len(base_bv_array)):
         #print(base_bv_array[i])
         GEM_num = 0
@@ -144,7 +135,6 @@ def obtain_experiment_params(base_bv_array, HTO_GEM_ary, sample_num, estimated_t
         params0 = [drop_num, capture_rate, *cell_num_ary]
 
     # Compute scaler
-    #scaler = [0.01, 1000]
     scaler = compute_scaler(params0)
 
     #print("params before scaling:", params0)
@@ -164,20 +154,12 @@ def obtain_experiment_params(base_bv_array, HTO_GEM_ary, sample_num, estimated_t
             {"type": "ineq", "fun": lambda x: - sum([a/b for a,b in zip(x[2:], scaler[2:])]) + estimated_total_cell_num * 1.01}
             ]
 
-    # Debug
-    #HTO_GEM_ary[0] /= 10
-
     res = minimize(experiment_params_wrapper, params0, args=(HTO_GEM_ary, sample_num, scaler, base_bv_array, lambda x,y: x/y), method='SLSQP', constraints=constraint_func, bounds=bounds, options={'verbose': 1, 'eps': 10, 'ftol' : 0.00001})
-    #res = minimize(experiment_params_wrapper, params0, args=(HTO_GEM_ary, sample_num, scaler, base_bv_array, lambda x,y: x/y), method='SLSQP', constraints=constraint_func, bounds=bounds, options={'verbose': 1, 'eps': 5})
-
-    #bounds = [(lower_bound[i], upper_bound[i]) for i in range(len(lower_bound))]
-    #res = optimize.shgo(func=experiment_params_wrapper, args=(HTO_GEM_ary, sample_num, scaler, base_bv_array, lambda x,y: x/y), constraints=constraint_func, bounds=bounds)#, options={'verbose': 1, 'eps': 5})
-    #print(res)
 
     #print(res)
     final_param = param_scaling(res.x, scaler, lambda x, y: x / y)
 
-    print(final_param)
+    #print(final_param)
     return final_param 
 
 

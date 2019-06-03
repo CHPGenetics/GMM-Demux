@@ -23,24 +23,35 @@ def main():
     parser.add_argument('hto_array', help = "Names of the HTO tags, separated by ','.")
     parser.add_argument('cell_num', help = "Estimated total number of cells across all HTO samples.")
 
-    parser.add_argument("-f", "--full", help="Generate the full classification report. Require a path argument.", type=str)
-    parser.add_argument("-s", "--simplified", help="Generate the simplified classification report. Require a path argument.", type=str)
-    parser.add_argument("-o", "--output", help="The path for storing the Same-Sample-Droplets (SSDs). SSDs are stored in mtx format. Require a path argument.", type=str)
-    parser.add_argument("-r", "--report", help="Store the data summary report. Require a file argument.", type=str)
+    parser.add_argument("-f", "--full", help="Generate the full classification report. Requires a path argument.", type=str)
+    parser.add_argument("-s", "--simplified", help="Generate the simplified classification report. Requires a path argument.", type=str)
+    parser.add_argument("-o", "--output", help="The path for storing the Same-Sample-Droplets (SSDs). SSDs are stored in mtx format. Requires a path argument.", type=str)
+    parser.add_argument("-r", "--report", help="Store the data summary report. Requires a file argument.", type=str)
+    parser.add_argument("-c", "--csv", help="Take input in csv format. Requires a file argument.", type=str)
+    parser.add_argument("-t", "--threshold", help="Provide the confidence threshold value. Requires a number in (0,1).", type=float)
 
     args = parser.parse_args()
 
     input_path = args.input_path
     hto_array = args.hto_array.split(',')
     estimated_total_cell_num = int(args.cell_num)
+
     if args.output:
         output_path = args.output
     else:
         output_path = "GMM_Demux_mtx"
 
-
-    full_df, GMM_df = GMM_IO.read_cellranger(input_path, hto_array)
-    confidence_threshold = 0.8 
+    if args.csv:
+        GMM_df = pd.read_csv(args.csv, index_col = 0)
+        full_df = GMM_df.copy()
+    else:
+        full_df, GMM_df = GMM_IO.read_cellranger(input_path, hto_array)
+    
+    confidence_threshold = 0.8
+    if args.threshold:
+        confidence_threshold = float(args.threshold)
+    else:
+        print("No confidence_threhsold argument provided. Taking default value 0.8.")
 
     ####### Run classifier #######
     GEM_num = GMM_df.shape[0]
@@ -73,25 +84,30 @@ def main():
     SSD_idx = classify_drops.obtain_SSD_list(purified_df, sample_num)
 
     # Store SSD result
-    print("***MSM-free droplets are stored in folder", output_path, "\n")
+    print("MSM-free droplets are stored in folder", output_path, "\n")
     SSD_df = GMM_IO.store_cellranger(full_df, SSD_idx, output_path)
 
     # Infer parameters
     HTO_GEM_ary = compute_venn.obtain_HTO_GEM_num(purified_df, base_bv_array, sample_num)
 
     params0 = None
-    combination_counter = 0 
-    for i in range(1, sample_num + 1):
-        combination_counter += comb(sample_num, i, True)
-        print(combination_counter)
-        print("**",params0)
-        HTO_GEM_ary_main = HTO_GEM_ary[0:combination_counter]
-        params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_main, sample_num, estimated_total_cell_num, params0)
+    combination_counter = 0
+    try:
+        for i in range(1, sample_num + 1):
+            combination_counter += comb(sample_num, i, True)
+            #print(combination_counter)
+            #print("**",params0)
+            HTO_GEM_ary_main = HTO_GEM_ary[0:combination_counter]
+            params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_main, sample_num, estimated_total_cell_num, params0)
+    except:
+        print("GMM cannot find a viable solution that satisfies the droplet formation model. SSM rate estimation terminated.")
+        sys.exit(0)
+            
 
-#    HTO_GEM_ary_main = HTO_GEM_ary[0:sample_num]
-#    params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_main, sample_num, estimated_total_cell_num)
-#    HTO_GEM_ary_extra = HTO_GEM_ary[0:sample_num + comb(sample_num, 2, True)]
-#    params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_extra, sample_num, estimated_total_cell_num, params0)
+    #HTO_GEM_ary_main = HTO_GEM_ary[0:sample_num]
+    #params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_main, sample_num, estimated_total_cell_num)
+    #HTO_GEM_ary_extra = HTO_GEM_ary[0:sample_num + comb(sample_num, 2, True)]
+    #params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_extra, sample_num, estimated_total_cell_num, params0)
 
     #(cell_num_ary, drop_num, capture_rate) = compute_venn.obtain_HTO_cell_n_drop_num(purified_df, base_bv_array, sample_num, estimated_total_cell_num, confidence_threshold)
     (drop_num, capture_rate, *cell_num_ary) = params0
@@ -104,26 +120,27 @@ def main():
 
     # Generate report
     full_report_dict = {
-            "#Drops": round(drop_num),
-            "Capture rate": "%5.2f" % (capture_rate * 100),
-            "#Cells": sum(rounded_cell_num_ary),
-            "Singlet": "%5.2f" % (singlet_rate * 100),
-            "MSM": "%5.2f" % (MSM_rate * 100),
-            "SSM": "%5.2f" % (SSM_rate * 100),
-            "RSSM": "%5.2f" % (estimator.compute_relative_SSM_rate(SSM_rate, singlet_rate) * 100),
-            "Negative": "%5.2f" % (negative_num / GMM_full_df.shape[0] * 100),
-            "Unclear": "%5.2f" % (unclear_num / GMM_full_df.shape[0] * 100)
-            }
+        "#Drops": round(drop_num),
+        "Capture rate": "%5.2f" % (capture_rate * 100),
+        "#Cells": sum(rounded_cell_num_ary),
+        "Singlet": "%5.2f" % (singlet_rate * 100),
+        "MSM": "%5.2f" % (MSM_rate * 100),
+        "SSM": "%5.2f" % (SSM_rate * 100),
+        "RSSM": "%5.2f" % (estimator.compute_relative_SSM_rate(SSM_rate, singlet_rate) * 100),
+        "Negative": "%5.2f" % (negative_num / GMM_full_df.shape[0] * 100),
+        "Unclear": "%5.2f" % (unclear_num / GMM_full_df.shape[0] * 100)
+        }
     full_report_columns = [
-            "#Drops",
-            "Capture rate",
-            "#Cells",
-            "Singlet",
-            "MSM",
-            "SSM",
-            "RSSM",
-            "Negative",
-            "Unclear"]
+        "#Drops",
+        "Capture rate",
+        "#Cells",
+        "Singlet",
+        "MSM",
+        "SSM",
+        "RSSM",
+        "Negative",
+        "Unclear"
+        ]
 
     full_report_df = pd.DataFrame(full_report_dict, index = ["Total"], columns=full_report_columns)
 
