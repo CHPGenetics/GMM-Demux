@@ -82,6 +82,10 @@ def compute_SSM_rate_with_cell_num(cell_num, drop_num):
     return SSM_rate
 
 
+def compute_GEM_prob(drop_num, cell_num):
+    return 1 - binom.pmf(0, cell_num, 1 / drop_num)
+
+
 def compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary, base_bv_array, sample_num):
     log_probability = 0
     #probability = 1.0
@@ -92,7 +96,7 @@ def compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GE
     
     for sample_idx in range(sample_num):
         ori_GEM_num = round(HTO_GEM_ary[sample_idx] / capture_rate)
-        GEM_formation_prob = compute_mix_rate(drop_num, cell_num_ary[sample_idx])
+        GEM_formation_prob = compute_GEM_prob(drop_num, cell_num_ary[sample_idx])
         GEM_prob_ary.append(GEM_formation_prob)
 
     for i in range(len(HTO_GEM_ary)):
