@@ -10,7 +10,6 @@ from scipy.optimize import minimize
 from scipy import optimize 
 from scipy.optimize import Bounds
 from scipy.optimize import LinearConstraint
-from scipy.special import comb
 
 # Returns the binary array representing all combinations of cells
 def obtain_base_bv_array(sample_num):
@@ -86,7 +85,7 @@ def obtain_HTO_GEM_num(data_df, base_bv_array, sample_num):
 #        HTO_GEM_ary.append(GEM_num)
 
     for i in range(1, len(base_bv_array)):
-        print(base_bv_array[i])
+        #print(base_bv_array[i])
         GEM_num = 0
 
         for j in range(len(base_bv_array)):
@@ -95,12 +94,12 @@ def obtain_HTO_GEM_num(data_df, base_bv_array, sample_num):
 
         HTO_GEM_ary.append(GEM_num)
     
-    print(HTO_GEM_ary)
+    #print(HTO_GEM_ary)
     return HTO_GEM_ary
 
 
 def experiment_params_wrapper(params, HTO_GEM_ary, sample_num, scaler, base_bv_array, operator):
-    print("***Params: ", params)
+    #print("***Params: ", params)
     scaled_params = params.copy()
 
     for i in range(len(scaler)):
@@ -148,21 +147,21 @@ def obtain_experiment_params(base_bv_array, HTO_GEM_ary, sample_num, estimated_t
     #scaler = [0.01, 1000]
     scaler = compute_scaler(params0)
 
-    print("params before scaling:", params0)
+    #print("params before scaling:", params0)
     # Scale all values
     params0 = param_scaling(params0, scaler, lambda x, y: x * y)
     lower_bound = param_scaling(lower_bound, scaler, lambda x, y: x * y)
     upper_bound = param_scaling(upper_bound, scaler, lambda x, y: x * y)
 
-    print("params:", params0)
-    print("bounds:", lower_bound, upper_bound)
+    #print("params:", params0)
+    #print("bounds:", lower_bound, upper_bound)
 
     bounds = Bounds(lower_bound, upper_bound)
 
     # Linear constraints are not scaled in current version.
     constraint_func = [
-            {"type": "ineq", "fun": lambda x: sum(x[2:]) - estimated_total_cell_num * 0.99},
-            {"type": "ineq", "fun": lambda x: - sum(x[2:]) + estimated_total_cell_num * 1.01}
+            {"type": "ineq", "fun": lambda x: sum([a/b for a,b in zip(x[2:], scaler[2:])]) - estimated_total_cell_num * 0.99},
+            {"type": "ineq", "fun": lambda x: - sum([a/b for a,b in zip(x[2:], scaler[2:])]) + estimated_total_cell_num * 1.01}
             ]
 
     # Debug
@@ -175,10 +174,10 @@ def obtain_experiment_params(base_bv_array, HTO_GEM_ary, sample_num, estimated_t
     #res = optimize.shgo(func=experiment_params_wrapper, args=(HTO_GEM_ary, sample_num, scaler, base_bv_array, lambda x,y: x/y), constraints=constraint_func, bounds=bounds)#, options={'verbose': 1, 'eps': 5})
     #print(res)
 
-    print(res)
+    #print(res)
     final_param = param_scaling(res.x, scaler, lambda x, y: x / y)
 
-    print("-------", final_param)
+    print(final_param)
     return final_param 
 
 

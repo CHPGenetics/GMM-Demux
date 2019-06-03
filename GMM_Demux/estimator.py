@@ -92,7 +92,7 @@ def compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GE
 
     GEM_prob_ary = []
 
-    print(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary)
+    #print(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary)
     
     for sample_idx in range(sample_num):
         ori_GEM_num = round(HTO_GEM_ary[sample_idx] / capture_rate)
@@ -109,15 +109,15 @@ def compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GE
 
         ori_GEM_num = round(HTO_GEM_ary[i] / capture_rate)
         sample_binom_prob = binom.pmf(ori_GEM_num, drop_num, GEM_formation_prob)
-        print("***ori_GEM_num:", ori_GEM_num)
-        print("***GEM_formation_prob:", GEM_formation_prob)
-        print("***sample_binom_prob:", sample_binom_prob)
-        print("***log sample_binom_prob:", log(sample_binom_prob))
-        print("***log sample_binom_prob, corrected:", log(sample_binom_prob) * ((1/sample_num) ** (base_bv_array[bv_idx].count_bits() - 1)))
+        #print("***ori_GEM_num:", ori_GEM_num)
+        #print("***GEM_formation_prob:", GEM_formation_prob)
+        #print("***sample_binom_prob:", sample_binom_prob)
+        #print("***log sample_binom_prob:", log(sample_binom_prob))
+        #print("***log sample_binom_prob, corrected:", log(sample_binom_prob) * ((1/sample_num) ** (base_bv_array[bv_idx].count_bits() - 1)))
         log_probability += log(sample_binom_prob) * ((1/sample_num) ** (base_bv_array[bv_idx].count_bits() - 1))
         #probability *= sample_binom_prob
 
-    print(log_probability)
+    #print(log_probability)
     #print(probability)
 
     return log_probability

@@ -13,6 +13,7 @@ from sys import argv
 import sys
 import argparse
 from tabulate import tabulate
+from scipy.special import comb
 
 def main():
     ####### Parsing parameters and preparing data #######
@@ -77,12 +78,23 @@ def main():
 
     # Infer parameters
     HTO_GEM_ary = compute_venn.obtain_HTO_GEM_num(purified_df, base_bv_array, sample_num)
-    HTO_GEM_ary_main = HTO_GEM_ary[0:sample_num]
-    #(cell_num_ary, drop_num, capture_rate) = compute_venn.obtain_experiment_params(HTO_GEM_ary, sample_num, estimated_total_cell_num)
-    params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_main, sample_num, estimated_total_cell_num)
-    compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary, sample_num, estimated_total_cell_num, params0)
 
-    (cell_num_ary, drop_num, capture_rate) = compute_venn.obtain_HTO_cell_n_drop_num(purified_df, base_bv_array, sample_num, estimated_total_cell_num, confidence_threshold)
+    params0 = None
+    combination_counter = 0 
+    for i in range(1, sample_num + 1):
+        combination_counter += comb(sample_num, i, True)
+        print(combination_counter)
+        print("**",params0)
+        HTO_GEM_ary_main = HTO_GEM_ary[0:combination_counter]
+        params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_main, sample_num, estimated_total_cell_num, params0)
+
+#    HTO_GEM_ary_main = HTO_GEM_ary[0:sample_num]
+#    params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_main, sample_num, estimated_total_cell_num)
+#    HTO_GEM_ary_extra = HTO_GEM_ary[0:sample_num + comb(sample_num, 2, True)]
+#    params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_extra, sample_num, estimated_total_cell_num, params0)
+
+    #(cell_num_ary, drop_num, capture_rate) = compute_venn.obtain_HTO_cell_n_drop_num(purified_df, base_bv_array, sample_num, estimated_total_cell_num, confidence_threshold)
+    (drop_num, capture_rate, *cell_num_ary) = params0
 
     SSM_rate_ary = [estimator.compute_SSM_rate_with_cell_num(cell_num_ary[i], drop_num) for i in range(sample_num)]
     rounded_cell_num_ary = [round(cell_num) for cell_num in cell_num_ary]

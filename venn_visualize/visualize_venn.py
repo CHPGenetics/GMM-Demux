@@ -191,8 +191,8 @@ if __name__ == "__main__":
     all_idx_ary = [i for i in range(sample_num)]
     for i in range(0, len(base_bv_array)):
         bv_key = int(base_bv_array[i])
-        #bv_realcell_venn_dict[bv_key] = ((GMM_df["Cluster_id"] == i + 1) & (GMM_df["Confidence"] > confidence_threshold)).sum()
-        bv_realcell_venn_dict[bv_key] = (GMM_df["Cluster_id"] == i + 1).sum()
+        bv_realcell_venn_dict[bv_key] = ((GMM_df["Cluster_id"] == i + 1) & (GMM_df["Confidence"] > confidence_threshold)).sum()
+        #bv_realcell_venn_dict[bv_key] = (GMM_df["Cluster_id"] == i + 1).sum()
     
 
     plot_venn(base_bv_array, bv_realcell_venn_dict, sample_num, "GMM-Demux-Observed Venn Diagram")
