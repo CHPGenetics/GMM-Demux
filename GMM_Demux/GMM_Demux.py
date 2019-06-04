@@ -90,7 +90,11 @@ def main():
     # Infer parameters
     HTO_GEM_ary = compute_venn.obtain_HTO_GEM_num(purified_df, base_bv_array, sample_num)
 
-    params0 = None
+    params0 = [80000, 0.5]
+
+    for i in range(sample_num):
+        params0.append(round(HTO_GEM_ary[i] * estimated_total_cell_num / sum(HTO_GEM_ary[:sample_num])))
+
     combination_counter = 0
     try:
         for i in range(1, sample_num + 1):

@@ -117,8 +117,12 @@ def compute_scaler(params):
     scaler.append(800 / params[0])
     scaler.append(500 / params[1])
 
+    sample_share = []
     for param in params[2:]:
-        scaler.append(10000 / param)
+        sample_share.append( param / sum(params[2:]) * 40000)
+
+    for share, param in zip(sample_share, params[2:]):
+        scaler.append(share / param)
 
     return scaler
 
@@ -128,11 +132,11 @@ def obtain_experiment_params(base_bv_array, HTO_GEM_ary, sample_num, estimated_t
     capture_rate = 0.5
     cell_num_ary = [estimated_total_cell_num / sample_num for i in range(sample_num)]
 
-    lower_bound = [1, 0.0] + [0 for i in range(sample_num)]
-    upper_bound = [np.inf, 1.0] + [np.inf for i in range(sample_num)]
-
     if params0 is None:
         params0 = [drop_num, capture_rate, *cell_num_ary]
+
+    lower_bound = [1, 0.0] + [0 for i in range(sample_num)]
+    upper_bound = [np.inf, 1.0] + [np.inf for i in range(sample_num)]
 
     # Compute scaler
     scaler = compute_scaler(params0)
@@ -154,7 +158,7 @@ def obtain_experiment_params(base_bv_array, HTO_GEM_ary, sample_num, estimated_t
             {"type": "ineq", "fun": lambda x: - sum([a/b for a,b in zip(x[2:], scaler[2:])]) + estimated_total_cell_num * 1.01}
             ]
 
-    res = minimize(experiment_params_wrapper, params0, args=(HTO_GEM_ary, sample_num, scaler, base_bv_array, lambda x,y: x/y), method='SLSQP', constraints=constraint_func, bounds=bounds, options={'verbose': 1, 'eps': 10, 'ftol' : 0.00001})
+    res = minimize(experiment_params_wrapper, params0, args=(HTO_GEM_ary, sample_num, scaler, base_bv_array, lambda x,y: x/y), method='SLSQP', constraints=constraint_func, bounds=bounds, options={'verbose': 1, 'eps': 10, 'ftol' : 0.0000001})
 
     #print(res)
     final_param = param_scaling(res.x, scaler, lambda x, y: x / y)
