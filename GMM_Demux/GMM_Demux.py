@@ -99,8 +99,6 @@ def main():
     try:
         for i in range(1, sample_num + 1):
             combination_counter += comb(sample_num, i, True)
-            #print(combination_counter)
-            #print("**",params0)
             HTO_GEM_ary_main = HTO_GEM_ary[0:combination_counter]
             params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_main, sample_num, estimated_total_cell_num, params0)
     except:
@@ -108,11 +106,7 @@ def main():
         sys.exit(0)
             
 
-    #HTO_GEM_ary_main = HTO_GEM_ary[0:sample_num]
-    #params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_main, sample_num, estimated_total_cell_num)
-    #HTO_GEM_ary_extra = HTO_GEM_ary[0:sample_num + comb(sample_num, 2, True)]
-    #params0 = compute_venn.obtain_experiment_params(base_bv_array, HTO_GEM_ary_extra, sample_num, estimated_total_cell_num, params0)
-
+    # Legacy parameter estimation
     #(cell_num_ary, drop_num, capture_rate) = compute_venn.obtain_HTO_cell_n_drop_num(purified_df, base_bv_array, sample_num, estimated_total_cell_num, confidence_threshold)
     (drop_num, capture_rate, *cell_num_ary) = params0
 
