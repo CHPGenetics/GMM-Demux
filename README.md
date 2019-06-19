@@ -1,7 +1,7 @@
 # GMM-Demux 
 A Gaussian Mixture Model based software for processing cell hashing data.
 
-Blow shows an example classification result. Orange dots are multi-sample multiplets.
+Below shows an example classification result. Orange dots are multi-sample multiplets.
 
 <img src="GMM_simplified.png" alt="GMM-Demux example" width="600"/>
 
@@ -44,13 +44,33 @@ python3 setup.py sdist bdist_wheel
 pip3 install --user . 
 ```
 
+* Post installation processes
+
+If this is the first time you install a python3 software through pip, make sure you add the pip binary folder to your `PATH` variable.
+Typically, the pip binary folder is located at ```~/.local/bin```.
+
+To temporarily add the pip binary folder, run the following command:
+```bash
+export PATH=~/.local/bin:$PATH
+```
+
+To permenantly add the pip library folder to your `PATH` variable, append the following line to your `.bashrc` file.
+```bash
+PATH=~/.local/bin:$PATH
+```
+
 ## Usage
 
 Once installed, the github folder is no longer needed. Instead, GMM-Demux is directly accessible with the ```GMM-demux``` command.
 ```bash
 GMM-demux <cell_hashing_path> <HTO_names> <estimated_cell_num>
 ```
-MSM-free droplets are stored in folder *GMM_Demux_mtx* by default.
+
+```<HTO_names>``` is a list of strings separated by ',' without whitespace.
+For example, there are four HTO tags in the example dataset supplied in this repository.
+They are *HTO_1*, *HTO_2*, *HTO_3*, *HTO_4*. The ```<HTO_names>``` variable therefore is ```HTO_1,HTO_2,_HTO_3,HTO_4```.
+
+MSM-free droplets are stored in folder *GMM_Demux_mtx* under the current directory by default.
 
 ## Example Usage
 An example cell hashing data is provided in *example_input*. <HTO_names> can be obtained from the features.tsv file.
