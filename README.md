@@ -61,8 +61,9 @@ PATH=~/.local/bin:$PATH
 
 ## Content
 
-The source code of GMM-Demux is supplied in the GMM_Demux folder.
-An example cell hashing dataset is also provided, located in the example_input/outs/filtered_feature_bc_matrix folder.
+The source code of GMM-Demux is supplied in the ```GMM_Demux``` folder.
+
+An example cell hashing dataset is also provided, located in the ```example_input/outs/filtered_feature_bc_matrix``` folder.
 
 ## Usage
 
