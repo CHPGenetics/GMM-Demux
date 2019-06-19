@@ -59,6 +59,11 @@ To permenantly add the pip library folder to your `PATH` variable, append the fo
 PATH=~/.local/bin:$PATH
 ```
 
+## Content
+
+The source code of GMM-Demux is supplied in the GMM_Demux folder.
+An example cell hashing dataset is also provided, located in the example_input/outs/filtered_feature_bc_matrix folder.
+
 ## Usage
 
 Once installed, the github folder is no longer needed. Instead, GMM-Demux is directly accessible with the ```GMM-demux``` command.
@@ -67,10 +72,11 @@ GMM-demux <cell_hashing_path> <HTO_names> <estimated_cell_num>
 ```
 
 ```<HTO_names>``` is a list of strings separated by ',' without whitespace.
-For example, there are four HTO tags in the example dataset supplied in this repository.
-They are *HTO_1*, *HTO_2*, *HTO_3*, *HTO_4*. The ```<HTO_names>``` variable therefore is ```HTO_1,HTO_2,_HTO_3,HTO_4```.
+For example, there are four HTO tags in the example cell hashing dataset supplied in this repository.
+They are **HTO_1**, **HTO_2**, **HTO_3**, **HTO_4**. The ```<HTO_names>``` variable therefore is ```HTO_1,HTO_2,_HTO_3,HTO_4```.
 
 MSM-free droplets are stored in folder *GMM_Demux_mtx* under the current directory by default.
+The output path can also be specified through the `-o` flag.
 
 ## Example Usage
 An example cell hashing data is provided in *example_input*. <HTO_names> can be obtained from the features.tsv file.
@@ -78,7 +84,7 @@ An example cell hashing data is provided in *example_input*. <HTO_names> can be 
 GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 35685
 ```
 
-<HTO_names> are obtained from the features.tsv file. An example is shown below.
+<HTO_names> are obtained from the features.tsv file. The feature.tsv file of the example cell hashing dataset is shown below.
 
 ![HTO names example](features.png)
 
