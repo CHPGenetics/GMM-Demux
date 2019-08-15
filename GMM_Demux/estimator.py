@@ -104,60 +104,50 @@ def phony_cluster_MSM_rate(cell_num_ary, cell_type_num = 2):
     return 1 - sum([pow(sample_prob, cell_type_num) for sample_prob in sample_prob_ary])
 
 
-def get_tau_cell_num(drop_num, total_cell_num, cluster_GEM_num):
+def get_tau_cell_num(drop_num, total_cell_num, cluster_GEM_num, ambiguous_rate = 0.0):
     SSD_prob = cluster_GEM_num / drop_num 
-    base_prob = 1 - 1 / drop_num
+    no_drop_rate = 1 - 1 / drop_num
+    certain_rate = 1 - ambiguous_rate
     
-    tau_cell_num = int(total_cell_num - log(SSD_prob + base_prob**total_cell_num, base_prob))
+    tau_cell_num = total_cell_num - int(log(SSD_prob \
+            + pow(no_drop_rate, total_cell_num * certain_rate + cluster_GEM_num * ambiguous_rate) \
+            , no_drop_rate) / certain_rate)
 
     return tau_cell_num
 
 
 def pure_cluster_MSM_rate(drop_num, cluster_GEM_num, cell_num_ary, capture_rate, ambiguous_rate = 0):
+    print("==================")
+
     total_cell_num = sum(cell_num_ary)
     sample_prob_ary = [cell_num / total_cell_num for cell_num in cell_num_ary]
 
     cluster_GEM_num = cluster_GEM_num / capture_rate
 
-    tau_cell_num = get_tau_cell_num(drop_num, total_cell_num, cluster_GEM_num)
+    print(cluster_GEM_num) 
 
-    print(tau_cell_num)
+    mix_cell_num = get_tau_cell_num(drop_num, total_cell_num, cluster_GEM_num)
+    tau_cell_num = mix_cell_num 
+    #tau_cell_num = (mix_cell_num - total_cell_num * ambiguous_rate) / (1 - ambiguous_rate)
+    #tau_cell_num = get_tau_cell_num(drop_num, total_cell_num, cluster_GEM_num)
 
-    tau_num_ary = [int(tau_cell_num * sample_prob) for sample_prob in sample_prob_ary]
+    print("initial tau_cell_num: ", tau_cell_num)
 
-    print(tau_num_ary)
+    pure_type_GEM_num = compute_SSD_num(drop_num, tau_cell_num + (total_cell_num - tau_cell_num) * ambiguous_rate, total_cell_num, ambiguous_rate)
+    while (pure_type_GEM_num > cluster_GEM_num):
+        tau_cell_num -= 1
+        pure_type_GEM_num = compute_SSD_num(drop_num, tau_cell_num + (total_cell_num - tau_cell_num) * ambiguous_rate, total_cell_num, ambiguous_rate)
 
-    SSD_num_ary = [compute_SSD_num(drop_num, tau_num, total_cell_num, ambiguous_rate) for tau_num in tau_num_ary]
+    print("final tau_cell_num: ", tau_cell_num)
 
-    print(SSD_num_ary)
-
+    tau_num_ary = [int((tau_cell_num + (total_cell_num - tau_cell_num) * ambiguous_rate) * sample_prob) for sample_prob in sample_prob_ary]
+    SSD_num_ary = [compute_SSD_num(drop_num, tau_num, total_cell_num) for tau_num in tau_num_ary]
     total_SSD_num = sum(SSD_num_ary)
 
-    print(total_SSD_num)
+    print("tau GEM num: ", pure_type_GEM_num)
+    print("total num: ", compute_SSD_num(drop_num, total_cell_num, total_cell_num))
 
-    print(compute_SSD_num(drop_num, tau_cell_num, total_cell_num))
-    print(compute_SSD_num(drop_num, total_cell_num, total_cell_num))
-
-    return 1 - (total_SSD_num / cluster_GEM_num)
-
-
-def debug_get_cell_num(drop_num, GEM_num, capture_rate):
-    no_drop_rate = (1 - 1 / drop_num)
-    return log(1 - GEM_num / (drop_num * capture_rate), no_drop_rate)
-
-
-def debug_compute_SSD_num_no_group(drop_num, subject_cell_num, group_cell_num, total_cell_num):
-    no_drop_rate = (1 - 1 / drop_num)
-    SSD_prob = (1 - pow(no_drop_rate, subject_cell_num)) * pow(no_drop_rate, total_cell_num - group_cell_num)
-
-    return int(SSD_prob * drop_num)
-
-
-def debug_compute_doublet_num(drop_num, type_a_num, type_b_num):
-    no_drop_rate = (1 - 1 / drop_num)
-    SSD_prob = (1 - pow(no_drop_rate, type_a_num)) * (1 - pow(no_drop_rate, type_b_num))
-
-    return int(SSD_prob * drop_num)
+    return 1 - (total_SSD_num / pure_type_GEM_num)
 
 
 def test_phony_hypothesis(cluster_MSM_num, cluster_GEM_num, cell_num_ary, capture_rate):
@@ -171,15 +161,28 @@ def test_pure_hypothesis(cluster_MSM_num, drop_num, cluster_GEM_num, cell_num_ar
     return binom_test(cluster_MSM_num / capture_rate, cluster_GEM_num / capture_rate, MSM_rate, "greater")
 
 
+####Debuging Functions####
+def debug_get_cell_num(drop_num, GEM_num, capture_rate):
+    no_drop_rate = (1 - 1 / drop_num)
+    return log(1 - GEM_num / (drop_num * capture_rate), no_drop_rate)
+
+
+def debug_compute_doublet_num(drop_num, type_a_num, type_b_num):
+    no_drop_rate = (1 - 1 / drop_num)
+    SSD_prob = (1 - pow(no_drop_rate, type_a_num)) * (1 - pow(no_drop_rate, type_b_num))
+
+    return int(SSD_prob * drop_num)
+
+
 def debug_pure_cluster_MSM_rate(drop_num, tau_cell_num, sample_num_ary, capture_rate, ambiguous_rate = 0):
     total_cell_num = sum(sample_num_ary)
     sample_prob_ary = [sample_num / total_cell_num for sample_num in sample_num_ary]
 
-    tau_num_ary = [int(tau_cell_num * sample_prob) for sample_prob in sample_prob_ary]
+    tau_num_ary = [int((tau_cell_num + (total_cell_num - tau_cell_num) * ambiguous_rate) * sample_prob) for sample_prob in sample_prob_ary]
 
     print(tau_num_ary)
 
-    SSD_num_ary = [compute_SSD_num(drop_num, tau_num, total_cell_num, ambiguous_rate) for tau_num in tau_num_ary]
+    SSD_num_ary = [compute_SSD_num(drop_num, tau_num, total_cell_num) for tau_num in tau_num_ary]
 
     print(SSD_num_ary)
 
@@ -187,12 +190,13 @@ def debug_pure_cluster_MSM_rate(drop_num, tau_cell_num, sample_num_ary, capture_
 
     print(total_SSD_num)
 
-    pure_type_num = compute_SSD_num(drop_num, tau_cell_num, total_cell_num)
+    pure_type_GEM_num = compute_SSD_num(drop_num, tau_cell_num + (total_cell_num - tau_cell_num) * ambiguous_rate, total_cell_num)
+    #pure_type_GEM_num = compute_SSD_num(drop_num, tau_cell_num + (total_cell_num - tau_cell_num) * ambiguous_rate, total_cell_num * (1 - ambiguous_rate))
 
-    print("Pure type num: ", int(pure_type_num * capture_rate))
+    print("Pure type num: ", int(pure_type_GEM_num * capture_rate))
 
-    return 1 - (total_SSD_num / pure_type_num)
-
+    return 1 - (total_SSD_num / pure_type_GEM_num)
+####End of Debuging Functions####
 
 
 def compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary, base_bv_array, sample_num):
