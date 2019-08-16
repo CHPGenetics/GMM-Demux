@@ -30,6 +30,7 @@ def main():
     parser.add_argument("-c", "--csv", help="Take input in csv format. Requires a file argument.", type=str)
     parser.add_argument("-t", "--threshold", help="Provide the confidence threshold value. Requires a number in (0,1).", type=float)
     parser.add_argument("-e", "--examine", help="Provide the cell list. Requires a file argument.", type=str)
+    parser.add_argument("-m", "--miscluster", help=". Requires a float < 1.")
 
     args = parser.parse_args()
 
@@ -187,6 +188,13 @@ def main():
 
         print("Phony-type testing. P-value: ", phony_test_pvalue)
         print("Pure-type testing. P-value: ", pure_test_pvalue)
+
+        if phony_test_pvalue < 0.01:
+            print("Conclusion: The cluster is a pure cluster.")
+        elif pure_test_pvalue < 0.01:
+            print("Conclusion: The cluster is a phony cluster.")
+        else:
+            print("Conclusion: The cluster is an unclear cluster.")
             
 
 if __name__ == "__main__":
