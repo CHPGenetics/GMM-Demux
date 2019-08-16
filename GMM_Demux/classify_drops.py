@@ -93,37 +93,37 @@ def store_full_classify_result(data_df, class_name_array, path):
             f.write("%s, %s\n" % (i, class_name_array[i]))
 
 
-
 # Store simplified classification result
 def store_simplified_classify_result(data_df, class_name_array, path, sample_num, confidence_threshold):
+
     simplified_df = data_df.copy()
-
-    if not os.path.exists(path):
-        os.makedirs(path)
-
     #print(simplified_df)
-
     MSM_idx = data_df.index[(data_df["Cluster_id"] > sample_num).nonzero()[0]]
     #print(MSM_idx)
     simplified_df.loc[MSM_idx, "Cluster_id"] = sample_num + 1
     unclear_idx = data_df.index[(data_df["Confidence"] < confidence_threshold).nonzero()[0]]
     #print(unclear_idx)
     simplified_df.loc[unclear_idx, "Cluster_id"] = sample_num + 2
-
     #print(simplified_df)
 
-    classify_file_name = os.path.join(path, "GMM_simplified.csv")
-    config_file_name = os.path.join(path, "GMM_simplified.config")
+    if path != None:
+        if not os.path.exists(path):
+            os.makedirs(path)
 
-    simplified_df.to_csv(classify_file_name)
+        classify_file_name = os.path.join(path, "GMM_simplified.csv")
+        config_file_name = os.path.join(path, "GMM_simplified.config")
 
-    simplified_name_array = [class_name_array[i] for i in range(sample_num + 1)]
-    simplified_name_array.append("MSM")
-    simplified_name_array.append("Unclear")
+        simplified_df.to_csv(classify_file_name)
 
-    with open(config_file_name, 'w') as f:
-        for i in range(len(simplified_name_array)):
-            f.write("%s, %s\n" % (i, simplified_name_array[i]))
+        simplified_name_array = [class_name_array[i] for i in range(sample_num + 1)]
+        simplified_name_array.append("MSM")
+        simplified_name_array.append("Unclear")
+
+        with open(config_file_name, 'w') as f:
+            for i in range(len(simplified_name_array)):
+                f.write("%s, %s\n" % (i, simplified_name_array[i]))
+
+    return simplified_df
 
 
 def purify_droplets(data_df, confidence_threshold):
@@ -142,6 +142,16 @@ def count_bad_droplets(data_df, confidence_threshold):
 def obtain_SSD_list(data_df, sample_num):
     SSD_idx = data_df.index[data_df["Cluster_id"] <= sample_num]
     return SSD_idx
+
+
+def obtain_MSM_list(data_df, sample_num, idx_list = None):
+    if idx_list == None:
+        MSM_idx = data_df.index[data_df["Cluster_id"] == sample_num + 1]
+    else:
+        selected_df = data_df.loc[idx_list]
+        MSM_idx = selected_df.index[selected_df["Cluster_id"] == sample_num + 1]
+
+    return MSM_idx
 
 
 def count_by_class(data_df, base_bv_array):

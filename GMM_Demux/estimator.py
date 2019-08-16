@@ -117,35 +117,35 @@ def get_tau_cell_num(drop_num, total_cell_num, cluster_GEM_num, ambiguous_rate =
 
 
 def pure_cluster_MSM_rate(drop_num, cluster_GEM_num, cell_num_ary, capture_rate, ambiguous_rate = 0):
-    print("==================")
+    #print("==================")
 
     total_cell_num = sum(cell_num_ary)
     sample_prob_ary = [cell_num / total_cell_num for cell_num in cell_num_ary]
 
     cluster_GEM_num = cluster_GEM_num / capture_rate
 
-    print(cluster_GEM_num) 
+    #print(cluster_GEM_num) 
 
     mix_cell_num = get_tau_cell_num(drop_num, total_cell_num, cluster_GEM_num)
     tau_cell_num = mix_cell_num 
     #tau_cell_num = (mix_cell_num - total_cell_num * ambiguous_rate) / (1 - ambiguous_rate)
     #tau_cell_num = get_tau_cell_num(drop_num, total_cell_num, cluster_GEM_num)
 
-    print("initial tau_cell_num: ", tau_cell_num)
+    #print("initial tau_cell_num: ", tau_cell_num)
 
     pure_type_GEM_num = compute_SSD_num(drop_num, tau_cell_num + (total_cell_num - tau_cell_num) * ambiguous_rate, total_cell_num, ambiguous_rate)
     while (pure_type_GEM_num > cluster_GEM_num):
         tau_cell_num -= 1
         pure_type_GEM_num = compute_SSD_num(drop_num, tau_cell_num + (total_cell_num - tau_cell_num) * ambiguous_rate, total_cell_num, ambiguous_rate)
 
-    print("final tau_cell_num: ", tau_cell_num)
+    #print("final tau_cell_num: ", tau_cell_num)
 
     tau_num_ary = [int((tau_cell_num + (total_cell_num - tau_cell_num) * ambiguous_rate) * sample_prob) for sample_prob in sample_prob_ary]
     SSD_num_ary = [compute_SSD_num(drop_num, tau_num, total_cell_num) for tau_num in tau_num_ary]
     total_SSD_num = sum(SSD_num_ary)
 
-    print("tau GEM num: ", pure_type_GEM_num)
-    print("total num: ", compute_SSD_num(drop_num, total_cell_num, total_cell_num))
+    #print("tau GEM num: ", pure_type_GEM_num)
+    #print("total num: ", compute_SSD_num(drop_num, total_cell_num, total_cell_num))
 
     return 1 - (total_SSD_num / pure_type_GEM_num)
 
@@ -155,9 +155,9 @@ def test_phony_hypothesis(cluster_MSM_num, cluster_GEM_num, cell_num_ary, captur
     return binom_test(cluster_MSM_num / capture_rate, cluster_GEM_num / capture_rate, MSM_rate, "less")
 
 
-def test_pure_hypothesis(cluster_MSM_num, drop_num, cluster_GEM_num, cell_num_ary, capture_rate):
-    MSM_rate = pure_cluster_MSM_rate(drop_num, cluster_GEM_num, cell_num_ary, capture_rate)
-    print(MSM_rate)
+def test_pure_hypothesis(cluster_MSM_num, drop_num, cluster_GEM_num, cell_num_ary, capture_rate, ambiguous_rate = 0):
+    MSM_rate = pure_cluster_MSM_rate(drop_num, cluster_GEM_num, cell_num_ary, capture_rate, ambiguous_rate)
+    print("Estimated MSM rate: ", MSM_rate)
     return binom_test(cluster_MSM_num / capture_rate, cluster_GEM_num / capture_rate, MSM_rate, "greater")
 
 
@@ -201,7 +201,6 @@ def debug_pure_cluster_MSM_rate(drop_num, tau_cell_num, sample_num_ary, capture_
 
 def compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GEM_ary, base_bv_array, sample_num):
     log_probability = 0
-    #probability = 1.0
 
     GEM_prob_ary = []
 
@@ -230,11 +229,4 @@ def compute_observation_probability(drop_num, capture_rate, cell_num_ary, HTO_GE
         log_probability += log(sample_binom_prob) * ((1/sample_num) ** (base_bv_array[bv_idx].count_bits() - 1))
         #probability *= sample_binom_prob
 
-    #print(log_probability)
-    #print(probability)
-
     return log_probability
-    #return probability
-
-if __name__ == "__main__":
-    print(pure_cluster_MSM_rate(80000, 2000, [5000,5000,5000,5000], 0.5))

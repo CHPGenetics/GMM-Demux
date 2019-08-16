@@ -29,6 +29,7 @@ def main():
     parser.add_argument("-r", "--report", help="Store the data summary report. Requires a file argument.", type=str)
     parser.add_argument("-c", "--csv", help="Take input in csv format. Requires a file argument.", type=str)
     parser.add_argument("-t", "--threshold", help="Provide the confidence threshold value. Requires a number in (0,1).", type=float)
+    parser.add_argument("-e", "--examine", help="Provide the cell list. Requires a file argument.", type=str)
 
     args = parser.parse_args()
 
@@ -142,8 +143,6 @@ def main():
 
     full_report_df = pd.DataFrame(full_report_dict, index = ["Total"], columns=full_report_columns)
 
-
-
     print("==============================Full Report==============================")
     print(tabulate(full_report_df, headers='keys', tablefmt='psql'))
     print ("\n\n")
@@ -168,6 +167,27 @@ def main():
         with open(args.report, "a") as report_file:
             report_file.write(tabulate(sample_df, headers='keys', tablefmt='psql'))
 
+
+    # Verify cell type 
+    if args.examine:
+        cell_list_path = args.examine
+        cell_list = [line.rstrip('\n') for line in open(args.examine)]
+        simplified_df = classify_drops.store_simplified_classify_result(purified_df, class_name_ary, None, sample_num, confidence_threshold)
+        cell_list = list(set(cell_list).intersection(simplified_df.index.tolist()))
+        MSM_list = classify_drops.obtain_MSM_list(simplified_df, sample_num, cell_list)
+
+        print("\n\n **** Verifying the GEM Cluster ****")
+
+        GEM_num = len(cell_list)
+        MSM_num = len(MSM_list)
+        print("GEM count: ", GEM_num, " | MSM count: ", MSM_num)
+
+        phony_test_pvalue = estimator.test_phony_hypothesis(MSM_num, GEM_num, rounded_cell_num_ary, capture_rate)
+        pure_test_pvalue = estimator.test_pure_hypothesis(MSM_num, drop_num, GEM_num, rounded_cell_num_ary, capture_rate, 0.1)
+
+        print("Phony-type testing. P-value: ", phony_test_pvalue)
+        print("Pure-type testing. P-value: ", pure_test_pvalue)
+            
 
 if __name__ == "__main__":
     main()
