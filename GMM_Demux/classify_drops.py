@@ -128,7 +128,6 @@ def store_simplified_classify_result(data_df, class_name_array, path, sample_num
 
 def purify_droplets(data_df, confidence_threshold):
     drop_idx = data_df.index[((data_df["Confidence"] < confidence_threshold) | (data_df["Cluster_id"] == 0)).nonzero()[0]]
-    #print((data_df["Cluster_id"] == 0).nonzero()[0])
     purified_df = data_df.drop(drop_idx)
     return purified_df
 

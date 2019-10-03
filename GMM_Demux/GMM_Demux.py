@@ -27,10 +27,10 @@ def main():
     parser.add_argument("-s", "--simplified", help="Generate the simplified classification report. Requires a path argument.", type=str)
     parser.add_argument("-o", "--output", help="The path for storing the Same-Sample-Droplets (SSDs). SSDs are stored in mtx format. Requires a path argument.", type=str)
     parser.add_argument("-r", "--report", help="Store the data summary report. Requires a file argument.", type=str)
-    parser.add_argument("-c", "--csv", help="Take input in csv format. Requires a file argument.", type=str)
-    parser.add_argument("-t", "--threshold", help="Provide the confidence threshold value. Requires a number in (0,1).", type=float)
+    parser.add_argument("-c", "--csv", help="Take input in csv format, instead of mmx format.", action='store_true')
+    parser.add_argument("-t", "--threshold", help="Provide the confidence threshold value. Requires a float in (0,1). Default value: 0.8", type=float)
     parser.add_argument("-e", "--examine", help="Provide the cell list. Requires a file argument.", type=str)
-    parser.add_argument("-m", "--miscluster", help=". Requires a float < 1.")
+    parser.add_argument("-a", "--ambiguous", help="The estimated chance of having a phony GEM getting included in a pure type GEM cluster by the clustering algorithm. Requires a float in (0, 1). Default value: 0.05", type=float)
 
     args = parser.parse_args()
 
@@ -38,22 +38,24 @@ def main():
     hto_array = args.hto_array.split(',')
     estimated_total_cell_num = int(args.cell_num)
 
+    print("==============================GMM-Demux Initialization==============================")
+
     if args.output:
         output_path = args.output
     else:
         output_path = "GMM_Demux_mtx"
 
     if args.csv:
-        GMM_df = pd.read_csv(args.csv, index_col = 0)
+        GMM_df = pd.read_csv(input_path, index_col = 0)
         full_df = GMM_df.copy()
     else:
         full_df, GMM_df = GMM_IO.read_cellranger(input_path, hto_array)
     
-    confidence_threshold = 0.8
     if args.threshold:
         confidence_threshold = float(args.threshold)
     else:
-        print("No confidence_threhsold argument provided. Taking default value 0.8.")
+        confidence_threshold = 0.8
+        print("No confidence threhsold provided. Taking default value 0.8.")
 
     ####### Run classifier #######
     GEM_num = GMM_df.shape[0]
@@ -73,8 +75,11 @@ def main():
         classify_drops.store_full_classify_result(GMM_full_df, class_name_ary, args.full)
 
     if args.simplified:
+        ########## Paper Specific ############
+        purified_df = classify_drops.purify_droplets(GMM_full_df, confidence_threshold)
+        ########## Paper Specific ############
         print("Simplified classification result is stored in", args.simplified)
-        classify_drops.store_simplified_classify_result(GMM_full_df, class_name_ary, args.simplified, sample_num, confidence_threshold)
+        classify_drops.store_simplified_classify_result(purified_df, class_name_ary, args.simplified, sample_num, confidence_threshold)
 
     ####### Estimate SSM #######
     # Count bad drops
@@ -171,31 +176,54 @@ def main():
 
     # Verify cell type 
     if args.examine:
+        print("\n\n==============================Verifying the GEM Cluster==============================")
+
+        if args.ambiguous:
+            ambiguous_rate = args.ambiguous
+        else:
+            print("No ambiguous rate provided. Taking default value 0.05.")
+            ambiguous_rate = 0.05
+
+        simplified_df = classify_drops.store_simplified_classify_result(purified_df, class_name_ary, None, sample_num, confidence_threshold)
+
         cell_list_path = args.examine
         cell_list = [line.rstrip('\n') for line in open(args.examine)]
-        simplified_df = classify_drops.store_simplified_classify_result(purified_df, class_name_ary, None, sample_num, confidence_threshold)
         cell_list = list(set(cell_list).intersection(simplified_df.index.tolist()))
-        MSM_list = classify_drops.obtain_MSM_list(simplified_df, sample_num, cell_list)
 
-        print("\n\n **** Verifying the GEM Cluster ****")
+        ########## Paper Specific ############
+        cell_list_df = pd.read_csv(args.examine, index_col = 0)
+        cell_list = cell_list_df.index.tolist()
+        ########## Paper Specific ############
+
+        MSM_list = classify_drops.obtain_MSM_list(simplified_df, sample_num, cell_list)
 
         GEM_num = len(cell_list)
         MSM_num = len(MSM_list)
         print("GEM count: ", GEM_num, " | MSM count: ", MSM_num)
 
         phony_test_pvalue = estimator.test_phony_hypothesis(MSM_num, GEM_num, rounded_cell_num_ary, capture_rate)
-        pure_test_pvalue = estimator.test_pure_hypothesis(MSM_num, drop_num, GEM_num, rounded_cell_num_ary, capture_rate, 0.1)
+        pure_test_pvalue = estimator.test_pure_hypothesis(MSM_num, drop_num, GEM_num, rounded_cell_num_ary, capture_rate, ambiguous_rate)
 
         print("Phony-type testing. P-value: ", phony_test_pvalue)
         print("Pure-type testing. P-value: ", pure_test_pvalue)
+        
+        cluster_type = ""
 
-        if phony_test_pvalue < 0.01:
-            print("Conclusion: The cluster is a pure cluster.")
-        elif pure_test_pvalue < 0.01:
-            print("Conclusion: The cluster is a phony cluster.")
+        if phony_test_pvalue < 0.01 and pure_test_pvalue > 0.01:
+            cluster_type = "pure"
+        elif pure_test_pvalue < 0.01 and phony_test_pvalue > 0.01:
+            cluster_type = "phony"
         else:
-            print("Conclusion: The cluster is an unclear cluster.")
-            
+            cluster_type = "unclear"
+
+        print("Conclusion: The cluster is a(n) " + cluster_type + " cluster.")
+
+        ########## Paper Specific ############
+        estimated_phony_cluster_MSM_rate = estimator.phony_cluster_MSM_rate(rounded_cell_num_ary, cell_type_num = 2)
+        estimated_pure_cluster_MSM_rate = estimator.pure_cluster_MSM_rate(drop_num, GEM_num, rounded_cell_num_ary, capture_rate, ambiguous_rate)
+        print(str(estimated_phony_cluster_MSM_rate)+","+str(estimated_pure_cluster_MSM_rate)+","+str(MSM_num / float(GEM_num))+","+str(phony_test_pvalue)+","+str(pure_test_pvalue)+","+str(GEM_num / float(purified_df.shape[0]))+","+str(cluster_type), file=sys.stderr)
+        ########## Paper Specific ############
+
 
 if __name__ == "__main__":
     main()
