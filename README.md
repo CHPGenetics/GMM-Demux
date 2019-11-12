@@ -159,8 +159,6 @@ An example output of a phony cell type:
 * -a AMBIGUOUS, --ambiguous AMBIGUOUS  The estimated chance of having a phony GEM getting included in a pure type GEM cluster by the clustering algorithm. Requires a float in (0, 1). Default value: 0.05. Only executes if -e executes.
 * -t THRESHOLD, --threshold THRESHOLD  Provide the confidence threshold value. Requires a float in (0,1). Default value: 0.8.
  
-* Dataset summary. An example summary is shown below.
-
 ## Online Cell Hashing Experiment Planner
 A GMM-Demux based online cell hashing experiment planner is publically accessible at [here](https://www.pitt.edu/~wec47/gmmdemux.html).
 
