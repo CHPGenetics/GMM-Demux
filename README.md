@@ -5,13 +5,24 @@ Below shows an example classification result. Orange dots are multi-sample multi
 
 <img src="GMM_simplified.png" alt="GMM-Demux example" width="600"/>
 
-
 ## Description
 GMM-Demux removes Multi-Sample-Multiplets (MSMs) in a cell hashing dataset and estimates the fraction of Same-Sample-Multiplets (SSMs) and singlets in the remaining dataset.
+GMM-Demux also verifies if a putative cell type exists, or is it merely an artifact induced by multiplets.
+
+Multiplet-induced fake cell types are called "phony cell types".
+
+An example phony cell type in a CITE-seq dataset is provided in the picture below:
+![phony CITE example](phony.png)
+
+
+Phony type clusters have large percentages of MSMs, as above figure shows.
+
+Percentages of MSMs are used as key features by GMM-Demux to classify GEM clusters.
 
 ## Features
 * Remove cell-hashing-identifiable multiplets from the dataset.
 * Estimate the fraction of cell-hashing-unidentifiable multiplets in the remaining dataset (the RSSM value).
+* Tests if a putative cell type exists.
 
 ## Example Dataset
 * An example cell hashing data is provided in the *example_input* folder. It contains the per drop HTO count matrix of a 4-sample cell hashing library prep.
@@ -20,8 +31,7 @@ GMM-Demux removes Multi-Sample-Multiplets (MSMs) in a cell hashing dataset and e
  Hongyi Xin, Qi Yan, Yale Jiang, Jiadi Luo, Carla Erb, Richard Duerr, Kong Chen* and Wei Chen*
 
 # Maintainer
-Hongyi Xin <xhongyi@pitt.edu>
-
+Hongyi Xin <gohongyi at gmail.edu>
 
 ## Requirement
 
@@ -65,11 +75,16 @@ The source code of GMM-Demux is supplied in the ```GMM_Demux``` folder.
 
 An example cell hashing dataset is also provided, located in the ```example_input/outs/filtered_feature_bc_matrix``` folder.
 
+An example set of hand-curated putative cell types are provided in the ```example_cell_types''' folder.
+
+An example csv HTO file of the above cell hashing data is provided as the ```example_hto.csv''' file.
+
 ## Usage
 
-Once installed, the github folder is no longer needed. Instead, GMM-Demux is directly accessible with the ```GMM-demux``` command.
+### Case 1: Basic Usage
+Once installed, GMM-Demux is directly accessible with the ```GMM-demux``` command.
 ```bash
-GMM-demux <cell_hashing_path> <HTO_names> <estimated_cell_num>
+GMM-demux <cell_hashing_path> <HTO_names>
 ```
 
 ```<HTO_names>``` is a list of strings separated by ',' without whitespace.
@@ -79,15 +94,59 @@ They are **HTO_1**, **HTO_2**, **HTO_3**, **HTO_4**. The ```<HTO_names>``` varia
 MSM-free droplets are stored in folder *GMM_Demux_mtx* under the current directory by default.
 The output path can also be specified through the `-o` flag.
 
-## Example Usage
+#### Example Command 
 An example cell hashing data is provided in *example_input*. <HTO_names> can be obtained from the features.tsv file.
 ```bash
-GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 35685
+GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4
 ```
 
 <HTO_names> are obtained from the features.tsv file. The feature.tsv file of the example cell hashing dataset is shown below.
 
 ![HTO names example](features.png)
+
+#### Output
+* CellRanger MSM-free drops, in MTX format. Compatible with CellRanger 3.0.
+
+### Case 2: Compute the MSM and SSM rates
+To compute the MSM and SSM rates, GMM-Demux requires the -u flag:
+
+* -u SUMMARY, --summary SUMMARY Generate the statstic summary of the dataset. Requires an estimated total number of cells in the assay as input.
+ 
+-u flag requires an additional <NUM_OF_CELL> argument, which is the estimated total count of cells in the single cell assay.
+
+#### Example Command
+```bash
+GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -u 35685
+```
+
+#### Output
+Below is an example report:
+![Summary example](summary.png)
+
+* MSM denotes the percentage of identified and removed multiplets among all droplets.
+* SSM denotes the percentage of unidentifiable multiplets among all droplets.
+* RSSM denotes the percentage of multiplets among the output droplets (after removing identifiable multiplets). RSSM **measures the quality of the cell hashing dataset**.
+
+### Case 3: Verify if a cell type exists 
+GMM-Demux verifies a putative cell type with the -e flag:
+
+* -e EXAMINE, --examine EXAMINE Provide the cell list. Requires a file argument. Only executes if -u is set.
+
+-e flag requires a file name, which stores the list of droplet barcodes of the putative cell type.
+
+#### Example Command
+```bash
+GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -u 35685 example_cell_types/CD19+.txt
+GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -u 35685 example_cell_types/Doublets/CD3+CD4+CD19+.txt
+```
+
+#### Output
+An example output of a pure cell type:
+![Pure type example](pure_type.png)
+
+An example output of a phony cell type:
+![Phone type example](phony_type.png)
+
 
 ## Optional Arguments
 * -h: show help information.
@@ -95,18 +154,26 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 
 * -s SIMPLIFIED, --simplified SIMPLIFIED  Generate the simplified classification report. Require a path argument.
 * -o OUTPUT, --output OUTPUT  Specify the folder to store the result. Require a path argument.
 * -r REPORT, --report REPORT  Specify the file to store summary report. Require a file argument.
+* -c CSV, --csv  Take input in csv format, instead of mmx format.
+* -x SKIP, --skip FULL\_REPORT  Load a full classification report and skip the mtx folder as input. Require a path argument.
+* -a AMBIGUOUS, --ambiguous AMBIGUOUS  The estimated chance of having a phony GEM getting included in a pure type GEM cluster by the clustering algorithm. Requires a float in (0, 1). Default value: 0.05. Only executes if -e executes.
+* -t THRESHOLD, --threshold THRESHOLD  Provide the confidence threshold value. Requires a float in (0,1). Default value: 0.8.
  
-## Output Values
-* CellRanger MSM-free drops, in MTX format. Compatible with CellRanger 3.0.
 * Dataset summary. An example summary is shown below.
-![Summary example](summary.png)
-
-## Output Explanation
-* MSM denotes the percentage of identified and removed multiplets among all droplets.
-* SSM denotes the percentage of unidentifiable multiplets among all droplets.
-* RSSM denotes the percentage of multiplets among the output droplets (after removing identifiable multiplets). RSSM **measures the quality of the cell hashing dataset**.
 
 ## Online Cell Hashing Experiment Planner
 A GMM-Demux based online cell hashing experiment planner is publically accessible at [here](https://www.pitt.edu/~wec47/gmmdemux.html).
 
 [<img src="planner.png" alt="Online explanner example" width="800"/>](https://www.pitt.edu/~wec47/gmmdemux.html)
+
+## Citation
+If you find this code useful in your research, please consider citing:
+
+@article{xin2019sample,
+  title={Sample demultiplexing, multiplet detection, experiment planning and novel cell type verification in single cell sequencing},
+  author={Xin, Hongyi and Yan, Qi and Jiang, Yale and Lian, Qiuyu and Luo, Jiadi and Erb, Carla and Duerr, Richard and Chen, Kong and Chen, Wei},
+  journal={bioRxiv},
+  pages={828483},
+  year={2019},
+  publisher={Cold Spring Harbor Laboratory}
+}
