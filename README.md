@@ -1,5 +1,5 @@
 # GMM-Demux 
-A Gaussian Mixture Model based software for processing cell hashing data.
+A Gaussian Mixture Model based software for processing sample barcoding data (including both cell hashing and MULTI-seq data).
 
 Below shows an example classification result. Orange dots are multi-sample multiplets.
 
@@ -15,15 +15,32 @@ An example phony cell type in a CITE-seq dataset is provided in the picture belo
 
 <img src="phony.png" width="600"/>
 
-In the above figure, both CD3+CD19+ and CD4+CD8+ cell types are multiplet induced cell types.
+In the above figure, both CD3+CD19+ and CD4+CD8+ cell types are multiplet induced fake cell types.
 
 Phony type clusters have large percentages of MSMs, as above figure shows. Both phony type clusters have large MSM percentages.
 
 Percentages of MSMs are used as key features by GMM-Demux to classify GEM clusters.
 
+## Terminology
+* Singlet: Droplet that contains a single cell.
+
+* MSM: Multi-Sample Multiplet. A multiplet that contains cells from different samples in sample barcoding. MSMs can be identified by GMM-Demux.
+
+* SSM: Same-Sample Multiplet. A multiplet that contains cells from the same sample in sample barcoding. SSMs cannot be separated from singlets by sample barcoding.
+
+* Pure type: a real cell type that exist in the tissue.
+
+* Phony type: an artificial cell type that is an artifact produced by multiplets.
+
+* Mixture type: a cluster of droplets in which there exist a large fraction of phony type droplets.
+
+An illustration of above terminology is provided in the figure below:
+
+<img src="term.png" width="600"/>
+
 ## Features
-* Remove cell-hashing-identifiable multiplets from the dataset.
-* Estimate the fraction of cell-hashing-unidentifiable multiplets in the remaining dataset (the RSSM value).
+* Remove cell-hashing-identifiable multiplets (MSMs) from the dataset.
+* Estimate the fraction of cell-hashing-unidentifiable multiplets (SSMs) in the remaining dataset (the RSSM percentage).
 * Tests if a putative cell type is a pure (real) cell type or is it a phony cell type.
 
 ## Example Dataset
