@@ -22,17 +22,17 @@ Phony type clusters have large percentages of MSMs, as above figure shows. Both 
 Percentages of MSMs are used as key features by GMM-Demux to classify GEM clusters.
 
 ## Terminology
-* Singlet: Droplet that contains a single cell.
+* **Singlet**: Droplet that contains a single cell.
 
-* MSM: Multi-Sample Multiplet. A multiplet that contains cells from different samples in sample barcoding. MSMs can be identified by GMM-Demux.
+* **MSM**: Multi-Sample Multiplet. A multiplet that contains cells from different samples in sample barcoding. MSMs can be identified by GMM-Demux.
 
-* SSM: Same-Sample Multiplet. A multiplet that contains cells from the same sample in sample barcoding. SSMs cannot be separated from singlets by sample barcoding.
+* **SSM**: Same-Sample Multiplet. A multiplet that contains cells from the same sample in sample barcoding. SSMs cannot be separated from singlets by sample barcoding.
 
-* Pure type: a real cell type that exist in the tissue.
+* **Pure type**: a real cell type that exist in the tissue.
 
-* Phony type: an artificial cell type that is an artifact produced by multiplets.
+* **Phony type**: an artificial cell type that is an artifact produced by multiplets.
 
-* Mixture type: a cluster of droplets in which there exist a large fraction of phony type droplets.
+* **Mixture type**: a cluster of droplets in which there exist a large fraction of phony type droplets.
 
 An illustration of above terminology is provided in the figure below:
 
