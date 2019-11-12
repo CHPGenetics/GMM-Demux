@@ -12,8 +12,8 @@ GMM-Demux also verifies if a putative cell type exists, or is it merely an artif
 Multiplet-induced fake cell types are called "phony cell types".
 
 An example phony cell type in a CITE-seq dataset is provided in the picture below:
-<img src="phony.png" width="250">
 
+<img src="phony.png" width="600">
 
 Phony type clusters have large percentages of MSMs, as above figure shows.
 
