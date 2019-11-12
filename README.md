@@ -90,7 +90,7 @@ pip3 install --user .
 If this is the first time you install a python3 software through pip, make sure you add the pip binary folder to your `PATH` variable.
 Typically, the pip binary folder is located at ```~/.local/bin```.
 
-The pip binary folder might locate at different locations if the user uses virtual enviroment. Pay attention to the pip installation output.
+The pip binary folder might locate at a different location if the user uses virtual enviroment. Pay attention to the pip installation output.
 
 Here is an example installation output. The path of the pip binary folder is highlighted:
 <img src="path.png" width="500"/>
@@ -100,7 +100,7 @@ To temporarily add the pip binary folder, run the following command:
 export PATH=~/.local/bin:$PATH
 ```
 
-To permenantly add the pip library folder to your `PATH` variable, append the following line to your `.bashrc` file.
+To permenantly add the pip library folder to your `PATH` variable, append the following line to your `.bashrc` file (assuming the user uses bash as the default shell).
 ```bash
 PATH=~/.local/bin:$PATH
 ```
@@ -111,9 +111,9 @@ The source code of GMM-Demux is supplied in the ```GMM_Demux``` folder.
 
 An example cell hashing dataset is also provided, located in the ```example_input/outs/filtered_feature_bc_matrix``` folder.
 
-An example set of hand-curated putative cell types are provided in the ```example_cell_types''' folder.
+An example set of hand-curated putative cell types are provided in the ```example_cell_types``` folder.
 
-An example csv HTO file of the above cell hashing data is provided as the ```example_hto.csv''' file.
+An example csv HTO file of the above cell hashing data is provided as the ```example_hto.csv``` file.
 
 ## Usage
 
