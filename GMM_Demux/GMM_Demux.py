@@ -23,25 +23,22 @@ def main():
     parser.add_argument('hto_array', help = "Names of the HTO tags, separated by ','.", nargs="*")
 
     parser.add_argument("-x", "--skip", help="Load a full classification report and skip the mtx folder. Requires a path argument to the full report folder. When specified, the user no longer needs to provide the mtx folder.", type=str)
-    parser.add_argument("-o", "--output", help="The path for storing the Same-Sample-Droplets (SSDs). SSDs are stored in mtx format. Requires a path argument.", type=str)
+    parser.add_argument("-o", "--output", help="The path for storing the Same-Sample-Droplets (SSDs). SSDs are stored in mtx format. Requires a path argument.", type=str, default="SSD_mtx")
     parser.add_argument("-f", "--full", help="Generate the full classification report. Requires a path argument.", type=str)
     parser.add_argument("-c", "--csv", help="Take input in csv format, instead of mmx format.", action='store_true')
-    parser.add_argument("-t", "--threshold", help="Provide the confidence threshold value. Requires a float in (0,1). Default value: 0.8", type=float)
+    parser.add_argument("-t", "--threshold", help="Provide the confidence threshold value. Requires a float in (0,1). Default value: 0.8", type=float, default=0.8)
     parser.add_argument("-s", "--simplified", help="Generate the simplified classification report. Requires a path argument.", type=str)
     parser.add_argument("-u", "--summary", help = "Generate the statstic summary of the dataset. Including MSM, SSM rates. Requires an estimated total number of cells in the assay as input.", type=int)
     parser.add_argument("-r", "--report", help="Store the data summary report. Requires a file argument. Only executes if -u is set.", type=str)
     parser.add_argument("-e", "--examine", help="Provide the cell list. Requires a file argument. Only executes if -u is set.", type=str)
-    parser.add_argument("-a", "--ambiguous", help="The estimated chance of having a phony GEM getting included in a pure type GEM cluster by the clustering algorithm. Requires a float in (0, 1). Default value: 0.05. Only executes if -e executes.", type=float)
+    parser.add_argument("-a", "--ambiguous", help="The estimated chance of having a phony GEM getting included in a pure type GEM cluster by the clustering algorithm. Requires a float in (0, 1). Default value: 0.05. Only executes if -e executes.", type=float, default=0.05)
     
     print("==============================GMM-Demux Initialization==============================")
 
     args = parser.parse_args()
 
-    if args.threshold:
-        confidence_threshold = float(args.threshold)
-    else:
-        confidence_threshold = 0.8
-        print("No confidence threhsold provided. Taking default value 0.8.")
+    confidence_threshold = args.threshold
+    print("Confidence threshold:", confidence_threshold)
 
     # Classify droplets
     if not args.skip:
@@ -53,10 +50,8 @@ def main():
         input_path = args.input_path
         hto_array = args.hto_array.split(',')
 
-        if args.output:
-            output_path = args.output
-        else:
-            output_path = "GMM_Demux_mtx"
+        output_path = args.output
+        print("Output directory:", output_path)
 
         if args.csv:
             GMM_df = pd.read_csv(input_path, index_col = 0)
@@ -199,11 +194,8 @@ def main():
         if args.examine:
             print("\n\n==============================Verifying the GEM Cluster==============================")
 
-            if args.ambiguous:
-                ambiguous_rate = args.ambiguous
-            else:
-                print("No ambiguous rate provided. Taking default value 0.05.")
-                ambiguous_rate = 0.05
+            ambiguous_rate = args.ambiguous
+            print("Ambiguous rate:", ambiguous_rate)
 
             simplified_df = classify_drops.store_simplified_classify_result(purified_df, class_name_ary, None, sample_num, confidence_threshold)
 

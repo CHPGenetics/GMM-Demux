@@ -13,19 +13,21 @@ Multiplet-induced fake cell types are called "phony cell types".
 
 An example phony cell type in a CITE-seq dataset is provided in the picture below:
 
-<img src="phony.png" width="600">
+<img src="phony.png" width="600"/>
 
-Phony type clusters have large percentages of MSMs, as above figure shows.
+In the above figure, both CD3+CD19+ and CD4+CD8+ cell types are multiplet induced cell types.
+
+Phony type clusters have large percentages of MSMs, as above figure shows. Both phony type clusters have large MSM percentages.
 
 Percentages of MSMs are used as key features by GMM-Demux to classify GEM clusters.
 
 ## Features
 * Remove cell-hashing-identifiable multiplets from the dataset.
 * Estimate the fraction of cell-hashing-unidentifiable multiplets in the remaining dataset (the RSSM value).
-* Tests if a putative cell type exists.
+* Tests if a putative cell type is a pure (real) cell type or is it a phony cell type.
 
 ## Example Dataset
-* An example cell hashing data is provided in the *example_input* folder. It contains the per drop HTO count matrix of a 4-sample cell hashing library prep.
+* An example cell hashing data is provided in the *example_input* folder. It contains the per drop HTO count matrix of a 4-sample cell hashing library prep. The input folder has the same file format with the CellRanger v3 output.
 
 # Authors
  Hongyi Xin, Qi Yan, Yale Jiang, Jiadi Luo, Carla Erb, Richard Duerr, Kong Chen* and Wei Chen*
@@ -147,17 +149,31 @@ An example output of a pure cell type:
 An example output of a phony cell type:
 ![Phone type example](phony_type.png)
 
+### Case 4: Use the csv file format as input, instead of the mtx format 
+#### Example Command
+```bash
+GMM-demux -c example_hto.csv HTO_1,HTO_2,HTO_3,HTO_4 -u 35685
+```
 
 ## Optional Arguments
 * -h: show help information.
 * -f FULL, --full FULL  Generate the full classification report. Require a path argument.
 * -s SIMPLIFIED, --simplified SIMPLIFIED  Generate the simplified classification report. Require a path argument.
-* -o OUTPUT, --output OUTPUT  Specify the folder to store the result. Require a path argument.
+* -o OUTPUT, --output OUTPUT  The path for storing the Same-Sample-Droplets (SSDs). SSDs are stored in mtx format. Requires a path argument. Default path: SSD_mtx.
 * -r REPORT, --report REPORT  Specify the file to store summary report. Require a file argument.
 * -c CSV, --csv  Take input in csv format, instead of mmx format.
 * -x SKIP, --skip FULL\_REPORT  Load a full classification report and skip the mtx folder as input. Require a path argument.
 * -a AMBIGUOUS, --ambiguous AMBIGUOUS  The estimated chance of having a phony GEM getting included in a pure type GEM cluster by the clustering algorithm. Requires a float in (0, 1). Default value: 0.05. Only executes if -e executes.
 * -t THRESHOLD, --threshold THRESHOLD  Provide the confidence threshold value. Requires a float in (0,1). Default value: 0.8.
+
+## Parsing the Classification Output
+There are two files in a classification output folder. A config file (ending with .config) and a classification file (ending with .csv).
+
+The classification file contains the label of each droplet as well as the probability of the classification. The classification is represented with numbers which are explained in the config file.
+
+Below shows the classification output of the example data:
+
+<img src="class_output.png" width="600"/>
  
 ## Online Cell Hashing Experiment Planner
 A GMM-Demux based online cell hashing experiment planner is publically accessible at [here](https://www.pitt.edu/~wec47/gmmdemux.html).
