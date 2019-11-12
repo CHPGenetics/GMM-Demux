@@ -60,23 +60,40 @@ GMM-Demux requires python3 (>3.5).
 
 GMM-Demux can be directly installed from PyPi. Or it can be built and installed locally.
 
-* Install GMM-Demux from PyPi.
+### Install GMM-Demux from PyPi.
 ```bash
 pip3 install --user GMM_Demux
 ```
+
+In some OS, the `pip3` is linked to `pip` by default. For these OS, the installation command is simply:
+
+```bash
+pip install --user GMM_Demux
+```
+
+Check if `pip3` is linked to `pip` with `pip -V`.
+
 If choose to install from PyPi, it is unnecessary to download GMM-Demux from github. However, we still recommend downloading the example dataset to try out GMM-Demux.
 
-* Install GMM-Demux locally using [setuptools](https://packaging.python.org/tutorials/installing-packages/) and pip3.
+### Install GMM-Demux locally using [setuptools](https://packaging.python.org/tutorials/installing-packages/) and pip3.
+
+You may choose to install it locally from the github repository. However, **this is for advanced users only and support is not gauranteed**.
+
 ```bash
 cd <GMM-Demux dir>
 python3 setup.py sdist bdist_wheel
 pip3 install --user . 
 ```
 
-* Post installation processes
+### Post installation processes
 
 If this is the first time you install a python3 software through pip, make sure you add the pip binary folder to your `PATH` variable.
 Typically, the pip binary folder is located at ```~/.local/bin```.
+
+The pip binary folder might locate at different locations if the user uses virtual enviroment. Pay attention to the pip installation output.
+
+Here is an example installation output. The path of the pip binary folder is highlighted:
+<img src="path.png" width="500"/>
 
 To temporarily add the pip binary folder, run the following command:
 ```bash
@@ -155,8 +172,8 @@ GMM-Demux verifies a putative cell type with the -e flag:
 
 #### Example Command
 ```bash
-GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -u 35685 example_cell_types/CD19+.txt
-GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -u 35685 example_cell_types/Doublets/CD3+CD4+CD19+.txt
+GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -u 35685 -e example_cell_types/CD19+.txt
+GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -u 35685 -e example_cell_types/Doublets/CD3+CD4+CD19+.txt
 ```
 
 #### Output
@@ -208,3 +225,7 @@ If you find this code useful in your research, please consider citing:
       year={2019},
       publisher={Cold Spring Harbor Laboratory}
     }
+
+## Acknowledgement
+
+Special thank to Zhongli Xu for testing GMM-Demux!
