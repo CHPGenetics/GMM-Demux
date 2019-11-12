@@ -5,6 +5,7 @@ from scipy import stats
 from sys import argv
 from sklearn.mixture import GaussianMixture
 import os
+from math import log2
 
 from GMM_Demux import check_multi_comp
 from GMM_Demux import compute_venn
@@ -75,6 +76,19 @@ def classify_drops(base_bv_array, high_array, low_array, sample_num, GEM_num, in
     GMM_full_df["Cluster_id"] = GMM_full_df["Cluster_id"].astype(int)
 
     return GMM_full_df, class_name_array
+
+
+def read_full_classify_result(path):
+    print(path)
+    classify_file_name = os.path.join(path, "GMM_full.csv")
+    config_file_name = os.path.join(path, "GMM_full.config")
+
+    full_df = pd.read_csv(classify_file_name, index_col = 0)
+    config_df = pd.read_csv(config_file_name, header=None)
+
+    sample_num = int(log2(config_df.shape[0]))
+
+    return full_df, sample_num, config_df.index.tolist(), [config_df.index[i] for i in range(sample_num)]
 
 
 # Store full classification result

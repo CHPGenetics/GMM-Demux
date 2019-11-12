@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="GMM_Demux",
-    version="0.0.5.3",
+    version="0.1.0",
     author="Hongyi Xin",
     author_email="gohongyi@gmail.com",
     description="A multiplet removal tool for processing cell hashing data",
