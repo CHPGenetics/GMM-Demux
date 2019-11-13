@@ -28,6 +28,8 @@ Percentages of MSMs are used as key features by GMM-Demux to classify GEM cluste
 
 * **SSM**: Same-Sample Multiplet. A multiplet that contains cells from the same sample in sample barcoding. SSMs cannot be separated from singlets by sample barcoding.
 
+* **SSD**: A combined category of both SSMs and singlets.
+
 * **Pure type**: a real cell type that exist in the tissue.
 
 * **Phony type**: an artificial cell type that is an artifact produced by multiplets.
@@ -117,7 +119,7 @@ An example csv HTO file of the above cell hashing data is provided as the ```exa
 
 ## Usage
 
-### Case 1: Basic Usage
+### Case 1: Basic Usage, Remove MSMs
 Once installed, GMM-Demux is directly accessible with the ```GMM-demux``` command.
 ```bash
 GMM-demux <cell_hashing_path> <HTO_names>
@@ -141,7 +143,7 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4
 ![HTO names example](features.png)
 
 #### Output
-* CellRanger MSM-free drops, in MTX format. Compatible with CellRanger 3.0.
+MSM-free droplets, in MTX format. The output has the same format with CellRanger 3.0 outputs. By default, the output is stored in `SSD_mtx` folder. The output location can be overwritten with `-o` flag.
 
 ### Case 2: Compute the MSM and SSM rates
 To compute the MSM and SSM rates, GMM-Demux requires the -u flag:
@@ -159,9 +161,7 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 
 Below is an example report:
 ![Summary example](summary.png)
 
-* MSM denotes the percentage of identified and removed multiplets among all droplets.
-* SSM denotes the percentage of unidentifiable multiplets among all droplets.
-* RSSM denotes the percentage of multiplets among the output droplets (after removing identifiable multiplets). RSSM **measures the quality of the cell hashing dataset**.
+* RSSM denotes the percentage of SSM among the remaining SSDs (after removing all MSMs). RSSM **measures the quality of the cell hashing dataset**.
 
 ### Case 3: Verify if a cell type exists 
 GMM-Demux verifies a putative cell type with the -e flag:

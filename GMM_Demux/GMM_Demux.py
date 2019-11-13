@@ -54,8 +54,9 @@ def main():
         print("Output directory:", output_path)
 
         if args.csv:
-            GMM_df = pd.read_csv(input_path, index_col = 0)
-            full_df = GMM_df.copy()
+            full_df = pd.read_csv(input_path, index_col = 0)
+            GMM_df = full_df.copy()
+            GMM_df = GMM_df[hto_array]
         else:
             full_df, GMM_df = GMM_IO.read_cellranger(input_path, hto_array)
         
