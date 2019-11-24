@@ -3,7 +3,7 @@ A Gaussian Mixture Model based software for processing sample barcoding data (in
 
 Below shows an example classification result. Orange dots are multi-sample multiplets.
 
-<img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/blob/master/GMM_simplified.png" alt="GMM-Demux example" width="600"/>
+<img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/GMM_simplified.png" alt="GMM-Demux example" width="600"/>
 
 ## Description
 GMM-Demux removes Multi-Sample-Multiplets (MSMs) in a cell hashing dataset and estimates the fraction of Same-Sample-Multiplets (SSMs) and singlets in the remaining dataset.
@@ -13,7 +13,7 @@ Multiplet-induced fake cell types are called "phony cell types".
 
 An example phony cell type in a CITE-seq dataset is provided in the picture below:
 
-<img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/blob/master/phony.png" width="600"/>
+<img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/phony.png" width="600"/>
 
 In the above figure, both CD3+CD19+ and CD4+CD8+ cell types are multiplet induced fake cell types.
 
@@ -38,7 +38,7 @@ Percentages of MSMs are used as key features by GMM-Demux to classify GEM cluste
 
 An illustration of above terminology is provided in the figure below:
 
-<img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/blob/master/term.png" width="600"/>
+<img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/term.png" width="600"/>
 
 ## Features
 * Remove cell-hashing-identifiable multiplets (MSMs) from the dataset.
@@ -95,7 +95,7 @@ Typically, the pip binary folder is located at ```~/.local/bin```.
 The pip binary folder might locate at a different location if the user uses virtual enviroment. Pay attention to the pip installation output.
 
 Here is an example installation output. The path of the pip binary folder is highlighted:
-<img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/blob/master/path.png" width="500"/>
+<img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/path.png" width="500"/>
 
 To temporarily add the pip binary folder, run the following command:
 ```bash
@@ -140,7 +140,7 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4
 
 <HTO_names> are obtained from the features.tsv file. The feature.tsv file of the example cell hashing dataset is shown below.
 
-![HTO names example](https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/blob/master/features.png)
+![HTO names example](https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/features.png)
 
 #### Output
 MSM-free droplets, in MTX format. The output has the same format with CellRanger 3.0 outputs. By default, the output is stored in `SSD_mtx` folder. The output location can be overwritten with `-o` flag.
@@ -159,7 +159,7 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 
 
 #### Output
 Below is an example report:
-![Summary example](https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/blob/master/summary.png)
+![Summary example](https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/summary.png)
 
 * RSSM denotes the percentage of SSM among the remaining SSDs (after removing all MSMs). RSSM **measures the quality of the cell hashing dataset**.
 
@@ -178,10 +178,10 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 
 
 #### Output
 An example output of a pure cell type:
-![Pure type example](https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/blob/master/pure_type.png)
+![Pure type example](https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/pure_type.png)
 
 An example output of a phony cell type:
-![Phone type example](https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/blob/master/phony_type.png)
+![Phone type example](https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/phony_type.png)
 
 ### Case 4: Use the csv file format as input, instead of the mtx format 
 #### Example Command
@@ -235,12 +235,12 @@ The classification file contains the label of each droplet as well as the probab
 
 Below shows the classification output of the example data:
 
-<img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/blob/master/class_output.png" width="600"/>
+<img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/class_output.png" width="600"/>
  
 ## Online Cell Hashing Experiment Planner
 A GMM-Demux based online cell hashing experiment planner is publically accessible at [here](https://www.pitt.edu/~wec47/gmmdemux.html).
 
-[<img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/blob/master/planner.png" alt="Online explanner example" width="600"/>](https://www.pitt.edu/~wec47/gmmdemux.html)
+[<img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/planner.png" alt="Online explanner example" width="600"/>](https://www.pitt.edu/~wec47/gmmdemux.html)
 
 ## Citation
 If you find this code useful in your research, please consider citing:
