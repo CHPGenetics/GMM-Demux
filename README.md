@@ -196,20 +196,20 @@ Extract droplets that are labeled with specific HTO(s), with the -x flag:
 
 **When -x is set, other functions of GMM-Demux will be turned off.**
 
-#### **Case 5a: Extract a single HTO sample**
+#### *Case 5a: Extract a single HTO sample*
 
 #### Example Command
 ```bash
 GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -x HTO_1
 ```
-#### **Case 5b: Extract a single HTO sample that are jointly defined by two HTO tags**
+#### *Case 5b: Extract a single HTO sample that are jointly defined by two HTO tags*
 Use `+` to specify the joint HTO tags.
 
 #### Example Command
 ```bash
 GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -x HTO_1+HTO_2
 ```
-#### **Case 5c: Extract multiple HTO samples**
+#### *Case 5c: Extract multiple HTO samples*
 Use `,` to separate sample tags. Single tag samples can be merged with joint-tag samples.
 
 #### Example Command
