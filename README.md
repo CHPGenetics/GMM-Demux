@@ -209,8 +209,8 @@ Use `+` to specify the joint HTO tags.
 ```bash
 GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -x HTO_1+HTO_2
 ```
-#### Case 5b: Extract multiple HTO samples
-Use `,` to separate sample tags. Single tag samples maybe merged with joint-tag samples.
+#### Case 5c: Extract multiple HTO samples
+Use `,` to separate sample tags. Single tag samples can be merged with joint-tag samples.
 
 #### Example Command
 ```bash
