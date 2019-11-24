@@ -3,7 +3,7 @@ A Gaussian Mixture Model based software for processing sample barcoding data (in
 
 Below shows an example classification result. Orange dots are multi-sample multiplets.
 
-<img src="GMM_simplified.png" alt="GMM-Demux example" width="600"/>
+<img src="https://github.com/CHPGenetics/GMM-Demux/GMM_simplified.png" alt="GMM-Demux example" width="600"/>
 
 ## Description
 GMM-Demux removes Multi-Sample-Multiplets (MSMs) in a cell hashing dataset and estimates the fraction of Same-Sample-Multiplets (SSMs) and singlets in the remaining dataset.
@@ -13,7 +13,7 @@ Multiplet-induced fake cell types are called "phony cell types".
 
 An example phony cell type in a CITE-seq dataset is provided in the picture below:
 
-<img src="phony.png" width="600"/>
+<img src="https://github.com/CHPGenetics/GMM-Demux/phony.png" width="600"/>
 
 In the above figure, both CD3+CD19+ and CD4+CD8+ cell types are multiplet induced fake cell types.
 
@@ -38,7 +38,7 @@ Percentages of MSMs are used as key features by GMM-Demux to classify GEM cluste
 
 An illustration of above terminology is provided in the figure below:
 
-<img src="term.png" width="600"/>
+<img src="https://github.com/CHPGenetics/GMM-Demux/term.png" width="600"/>
 
 ## Features
 * Remove cell-hashing-identifiable multiplets (MSMs) from the dataset.
@@ -95,7 +95,7 @@ Typically, the pip binary folder is located at ```~/.local/bin```.
 The pip binary folder might locate at a different location if the user uses virtual enviroment. Pay attention to the pip installation output.
 
 Here is an example installation output. The path of the pip binary folder is highlighted:
-<img src="path.png" width="500"/>
+<img src="https://github.com/CHPGenetics/GMM-Demux/path.png" width="500"/>
 
 To temporarily add the pip binary folder, run the following command:
 ```bash
@@ -140,7 +140,7 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4
 
 <HTO_names> are obtained from the features.tsv file. The feature.tsv file of the example cell hashing dataset is shown below.
 
-![HTO names example](features.png)
+![HTO names example](https://github.com/CHPGenetics/GMM-Demux/features.png)
 
 #### Output
 MSM-free droplets, in MTX format. The output has the same format with CellRanger 3.0 outputs. By default, the output is stored in `SSD_mtx` folder. The output location can be overwritten with `-o` flag.
@@ -148,7 +148,7 @@ MSM-free droplets, in MTX format. The output has the same format with CellRanger
 ### Case 2: Compute the MSM and SSM rates
 To compute the MSM and SSM rates, GMM-Demux requires the -u flag:
 
-* -u SUMMARY, --summary SUMMARY Generate the statstic summary of the dataset. Requires an estimated total number of cells in the assay as input.
+* -u SUMMARY, --summary SUMMARY  Generate the statstic summary of the dataset. Requires an estimated total number of cells in the assay as input.
  
 -u flag requires an additional <NUM_OF_CELL> argument, which is the estimated total count of cells in the single cell assay.
 
@@ -159,14 +159,14 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 
 
 #### Output
 Below is an example report:
-![Summary example](summary.png)
+![Summary example](https://github.com/CHPGenetics/GMM-Demux/summary.png)
 
 * RSSM denotes the percentage of SSM among the remaining SSDs (after removing all MSMs). RSSM **measures the quality of the cell hashing dataset**.
 
 ### Case 3: Verify if a cell type exists 
 GMM-Demux verifies a putative cell type with the -e flag:
 
-* -e EXAMINE, --examine EXAMINE Provide the cell list. Requires a file argument. Only executes if -u is set.
+* -e EXAMINE, --examine  EXAMINE Provide the cell list. Requires a file argument. Only executes if -u is set.
 
 -e flag requires a file name, which stores the list of droplet barcodes of the putative cell type.
 
@@ -178,15 +178,43 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 
 
 #### Output
 An example output of a pure cell type:
-![Pure type example](pure_type.png)
+![Pure type example](https://github.com/CHPGenetics/GMM-Demux/pure_type.png)
 
 An example output of a phony cell type:
-![Phone type example](phony_type.png)
+![Phone type example](https://github.com/CHPGenetics/GMM-Demux/phony_type.png)
 
 ### Case 4: Use the csv file format as input, instead of the mtx format 
 #### Example Command
 ```bash
 GMM-demux -c example_hto.csv HTO_1,HTO_2,HTO_3,HTO_4 -u 35685
+```
+
+### Case 5: Extract droplets of specific HTO sample configurations
+Extract droplets that are labeled with specific HTO(s), with the -x flag:
+
+* -x EXTRACT, --extract EXTRACT  Names of the HTO tag(s) to extract, separated by ','. Joint HTO samples are combined with '+'.
+
+**When -x is set, other functions of GMM-Demux will be turned off.**
+
+#### Case 5a: Extract a single HTO sample
+
+#### Example Command
+```bash
+GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -x HTO_1
+```
+#### Case 5b: Extract a single HTO sample that are jointly defined by two HTO tags
+Use `+` to specify the joint HTO tags.
+
+#### Example Command
+```bash
+GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -x HTO_1+HTO_2
+```
+#### Case 5b: Extract multiple HTO samples
+Use `,` to separate sample tags. Single tag samples maybe merged with joint-tag samples.
+
+#### Example Command
+```bash
+GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -x HTO3,HTO_1+HTO_2,HTO_1+HTO_4
 ```
 
 ## Optional Arguments
@@ -196,7 +224,7 @@ GMM-demux -c example_hto.csv HTO_1,HTO_2,HTO_3,HTO_4 -u 35685
 * -o OUTPUT, --output OUTPUT  The path for storing the Same-Sample-Droplets (SSDs). SSDs are stored in mtx format. Requires a path argument. Default path: SSD_mtx.
 * -r REPORT, --report REPORT  Specify the file to store summary report. Require a file argument.
 * -c CSV, --csv  Take input in csv format, instead of mmx format.
-* -x SKIP, --skip FULL\_REPORT  Load a full classification report and skip the mtx folder as input. Require a path argument.
+* -s SKIP, --skip FULL\_REPORT  Load a full classification report and skip the mtx folder as input. Require a path argument.
 * -a AMBIGUOUS, --ambiguous AMBIGUOUS  The estimated chance of having a phony GEM getting included in a pure type GEM cluster by the clustering algorithm. Requires a float in (0, 1). Default value: 0.05. Only executes if -e executes.
 * -t THRESHOLD, --threshold THRESHOLD  Provide the confidence threshold value. Requires a float in (0,1). Default value: 0.8.
 
@@ -207,12 +235,12 @@ The classification file contains the label of each droplet as well as the probab
 
 Below shows the classification output of the example data:
 
-<img src="class_output.png" width="600"/>
+<img src="https://github.com/CHPGenetics/GMM-Demux/class_output.png" width="600"/>
  
 ## Online Cell Hashing Experiment Planner
 A GMM-Demux based online cell hashing experiment planner is publically accessible at [here](https://www.pitt.edu/~wec47/gmmdemux.html).
 
-[<img src="planner.png" alt="Online explanner example" width="600"/>](https://www.pitt.edu/~wec47/gmmdemux.html)
+[<img src="https://github.com/CHPGenetics/GMM-Demux/planner.png" alt="Online explanner example" width="600"/>](https://www.pitt.edu/~wec47/gmmdemux.html)
 
 ## Citation
 If you find this code useful in your research, please consider citing:

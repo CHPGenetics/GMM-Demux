@@ -152,8 +152,14 @@ def count_bad_droplets(data_df, confidence_threshold):
     return negative_num, unclear_num
 
 
-def obtain_SSD_list(data_df, sample_num):
-    SSD_idx = data_df.index[data_df["Cluster_id"] <= sample_num]
+def obtain_SSD_list(data_df, sample_num, class_id_ary = None):
+    if class_id_ary is not None:
+        SSD_idx = []
+        for class_id in class_id_ary:
+            SSD_idx.extend(data_df.index[data_df["Cluster_id"] == class_id])
+    else:
+        SSD_idx = data_df.index[data_df["Cluster_id"] <= sample_num]
+
     return SSD_idx
 
 

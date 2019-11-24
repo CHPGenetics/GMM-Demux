@@ -45,6 +45,16 @@ def check_set_bit(bv, bit_pos, sample_num):
     return int(mask & bv) != 0
 
 
+def init_mask(sample_num):
+    mask = BitVector.BitVector(size = sample_num)
+    return mask
+
+
+def set_bit(bv, bit_pos):
+    bv[bit_pos] = 1
+    return bv
+
+
 def gather_multiplet_rates(venn_values, SSM_rate_ary, sample_num):
     total_drops = 0
     total_singlets = 0
