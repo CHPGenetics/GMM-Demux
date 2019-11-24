@@ -202,7 +202,7 @@ Extract droplets that are labeled with specific HTO(s), with the -x flag:
 ```bash
 GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -x HTO_1
 ```
-#### *Case 5b: Extract a single HTO sample that are jointly defined by two HTO tags*
+#### *Case 5b: Extract a single HTO sample that are jointly defined by multiple HTO tags*
 Use `+` to specify the joint HTO tags.
 
 #### Example Command
@@ -214,7 +214,7 @@ Use `,` to separate sample tags. Single tag samples can be merged with joint-tag
 
 #### Example Command
 ```bash
-GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -x HTO3,HTO_1+HTO_2,HTO_1+HTO_4
+GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 -x HTO3,HTO_1+HTO_2,HTO_1+HTO_4+HTO_2
 ```
 
 ## Optional Arguments
