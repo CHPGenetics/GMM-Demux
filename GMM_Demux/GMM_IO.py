@@ -21,6 +21,14 @@ def clr_norm(data_df):
     return data_df
 
 
+def read_csv(path, hto_array):
+    full_df = pd.read_csv(input_path, index_col = 0)
+    GMM_df = full_df.copy()
+    GMM_df = GMM_df[hto_array]
+    GMM_df = clr_norm(GMM_df)
+    return GMM_df
+
+
 def read_cellranger(path, hto_array):
     mtx_file = gzip.open(os.path.join(path, 'matrix.mtx.gz'), 'r')
     cell_matrix = (mmread(mtx_file))
