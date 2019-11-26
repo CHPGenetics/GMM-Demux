@@ -57,9 +57,9 @@ def main():
         output_path = args.output
         print("Output directory:", output_path)
 
-        # Read in data
+        #TODO: add CLR to csv data.
         if args.csv:
-            GMM_df = GMM_IO.read_csv(input_path, hto_array)
+            full_df, GMM_df = GMM_IO.read_csv(input_path, hto_array)
         else:
             full_df, GMM_df = GMM_IO.read_cellranger(input_path, hto_array)
         
