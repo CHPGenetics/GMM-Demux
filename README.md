@@ -224,7 +224,7 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 
 * -o OUTPUT, --output OUTPUT  The path for storing the Same-Sample-Droplets (SSDs). SSDs are stored in mtx format. Requires a path argument. Default path: SSD_mtx.
 * -r REPORT, --report REPORT  Specify the file to store summary report. Require a file argument.
 * -c CSV, --csv  Take input in csv format, instead of mmx format.
-* -s SKIP, --skip FULL\_REPORT  Load a full classification report and skip the mtx folder as input. Require a path argument.
+* -k SKIP, --skip FULL\_REPORT  Load a full classification report and skip the mtx folder as input. Require a path argument.
 * -a AMBIGUOUS, --ambiguous AMBIGUOUS  The estimated chance of having a phony GEM getting included in a pure type GEM cluster by the clustering algorithm. Requires a float in (0, 1). Default value: 0.05. Only executes if -e executes.
 * -t THRESHOLD, --threshold THRESHOLD  Provide the confidence threshold value. Requires a float in (0,1). Default value: 0.8.
 
