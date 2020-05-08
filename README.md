@@ -1,52 +1,52 @@
 # GMM-Demux 
-A Gaussian Mixture Model based software for processing sample barcoding data (including both cell hashing and MULTI-seq data).
+GMM-Demux is a Gaussian-Mixture-Model-based software for processing sample barcoding data (cell hashing and MULTI-seq).
 
-Below shows an example classification result. Orange dots are multi-sample multiplets.
+GMM-Demux identifies Multi-Sample Multiplets (MSMs) in a sample barcoding dataset. Below shows an example distribution of MSMs in a PBMC scRNA-seq dataset. Orange dots in the scatter plot are MSMs.
 
 <img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/GMM_simplified.png" alt="GMM-Demux example" width="600"/>
 
 ## Description
-GMM-Demux removes Multi-Sample-Multiplets (MSMs) in a cell hashing dataset and estimates the fraction of Same-Sample-Multiplets (SSMs) and singlets in the remaining dataset.
+GMM-Demux removes Multi-Sample-Multiplets (MSMs) in a cell hashing dataset and estimates the percentages of Same-Sample-Multiplets (SSMs) and singlets in the remaining dataset.
 GMM-Demux also verifies if a putative cell type exists, or is it merely an artifact induced by multiplets.
 
 Multiplet-induced fake cell types are called "phony cell types".
 
-An example phony cell type in a CITE-seq dataset is provided in the picture below:
+Examples of phony cell types in a PBMC CITE-seq dataset is provided in the figure below:
 
 <img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/phony.png" width="600"/>
 
-In the above figure, both CD3+CD19+ and CD4+CD8+ cell types are multiplet induced fake cell types.
+In the above figure, both the CD3+CD19+ and the CD4+CD8+ cell types are multiplet-induced fake cell types.
 
 Phony type clusters have large percentages of MSMs, as above figure shows. Both phony type clusters have large MSM percentages.
 
 Percentages of MSMs are used as key features by GMM-Demux to classify GEM clusters.
 
 ## Terminology
-* **Singlet**: Droplet that contains a single cell.
+* **Singlet**: A droplet that contains a single cell.
 
-* **MSM**: Multi-Sample Multiplet. A multiplet that contains cells from different samples in sample barcoding. MSMs can be identified by GMM-Demux.
+* **MSM**: Multi-Sample Multiplet. A MSM is a multiplet that contains cells from different samples in sample barcoding. MSMs can be identified by GMM-Demux.
 
-* **SSM**: Same-Sample Multiplet. A multiplet that contains cells from the same sample in sample barcoding. SSMs cannot be separated from singlets by sample barcoding.
+* **SSM**: Same-Sample Multiplet. A SSM is a multiplet that contains cells from a single sample in sample barcoding. SSMs cannot be separated from singlets by sample barcoding.
 
-* **SSD**: A combined category of both SSMs and singlets.
+* **SSD**: Same-Sample Droplet. SSD is a combined category of both SSMs and singlets.
 
-* **Pure type**: a real cell type that exist in the tissue.
+* **Pure type**: a pure type cell type is a real cell type that exist in the tissue.
 
-* **Phony type**: an artificial cell type that is an artifact produced by multiplets.
+* **Phony type**: a phony type cell type is an artificial cell type that is an artifact produced by multiplets.
 
-* **Mixture type**: a cluster of droplets in which there exist a large fraction of phony type droplets.
+* **Mixture type**: a mixture type cell type is a cluster of droplets in which there exist a non-trivial fraction of phony type droplets.
 
-An illustration of above terminology is provided in the figure below:
+An illustration of the above terminologies in a PBMC dataset is provided in the figure below:
 
 <img src="https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/term.png" width="600"/>
 
 ## Features
-* Remove cell-hashing-identifiable multiplets (MSMs) from the dataset.
+* Remove cell-hashing-identifiable multiplets (i.e., MSMs) from the dataset.
 * Estimate the fraction of cell-hashing-unidentifiable multiplets (SSMs) in the remaining dataset (the RSSM percentage).
-* Tests if a putative cell type is a pure (real) cell type or is it a phony cell type.
+* Test if a putative cell type is a pure (real) cell type or is it a phony (fake) cell type.
 
 ## Example Dataset
-* An example cell hashing data is provided in the *example_input* folder. It contains the per drop HTO count matrix of a 4-sample cell hashing library prep. The input folder has the same file format with the CellRanger v3 output.
+* An example cell hashing dataset is provided in the *example_input* folder. It contains the per-drop HTO count matrix of a 4-sample cell hashing library prep. The input folder has the same file format with the CellRanger v3 output.
 
 # Authors
  Hongyi Xin, Qi Yan, Yale Jiang, Jiadi Luo, Carla Erb, Richard Duerr, Kong Chen* and Wei Chen*
@@ -75,11 +75,12 @@ pip install --user GMM_Demux
 
 Check if `pip3` is linked to `pip` with `pip -V`.
 
-If choose to install from PyPi, it is unnecessary to download GMM-Demux from github. However, we still recommend downloading the example dataset to try out GMM-Demux.
+If one chooses to install GMM-Demux from PyPi, it is unnecessary to download GMM-Demux from github. However, we still recommend downloading the example dataset to try out GMM-Demux.
 
 ### Install GMM-Demux locally using [setuptools](https://packaging.python.org/tutorials/installing-packages/) and pip3.
 
-You may choose to install it locally from the github repository. However, **this is for advanced users only and support is not gauranteed**.
+You may choose to install GMM-Demux locally after cloning the github repository. However, **this is for advanced users only and support is not gauranteed**.
+The command is provided below:
 
 ```bash
 cd <GMM-Demux dir>
@@ -102,7 +103,7 @@ To temporarily add the pip binary folder, run the following command:
 export PATH=~/.local/bin:$PATH
 ```
 
-To permenantly add the pip library folder to your `PATH` variable, append the following line to your `.bashrc` file (assuming the user uses bash as the default shell).
+To permenantly add the pip library folder to your `PATH` variable, append the following line to your `.bashrc` file (assuming bash is the default shell).
 ```bash
 PATH=~/.local/bin:$PATH
 ```
@@ -113,9 +114,9 @@ The source code of GMM-Demux is supplied in the ```GMM_Demux``` folder.
 
 An example cell hashing dataset is also provided, located in the ```example_input/outs/filtered_feature_bc_matrix``` folder.
 
-An example set of hand-curated putative cell types are provided in the ```example_cell_types``` folder.
+An example set of hand-curated putative cell types of the above dataset are provided in the ```example_cell_types``` folder. Cell types are annotated through manual gating using surface marker expression data.
 
-An example csv HTO file of the above cell hashing data is provided as the ```example_hto.csv``` file.
+An example csv format of the above cell hashing dataset is provided as the ```example_hto.csv``` file.
 
 ## Usage
 
@@ -125,32 +126,32 @@ Once installed, GMM-Demux is directly accessible with the ```GMM-demux``` comman
 GMM-demux <cell_hashing_path> <HTO_names>
 ```
 
-```<HTO_names>``` is a list of strings separated by ',' without whitespace.
-For example, there are four HTO tags in the example cell hashing dataset supplied in this repository.
+```<HTO_names>``` is a list of sample tags (HTOs) separated by ',' without whitespace.
+For example, there are four sample barcoding tags in the example cell hashing dataset.
 They are **HTO_1**, **HTO_2**, **HTO_3**, **HTO_4**. The ```<HTO_names>``` variable therefore is ```HTO_1,HTO_2,_HTO_3,HTO_4```.
 
-MSM-free droplets are stored in folder *GMM_Demux_mtx* under the current directory by default.
+The non-MSM droplets (SSDs) of the dataset are stored in the *GMM_Demux_mtx* folder under the current directory by default.
 The output path can also be specified through the `-o` flag.
 
 #### Example Command 
-An example cell hashing data is provided in *example_input*. <HTO_names> can be obtained from the features.tsv file.
+An example cell hashing data is provided in the *example_input* folder. <HTO_names> can be obtained from the features.tsv file.
 ```bash
 GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4
 ```
 
-<HTO_names> are obtained from the features.tsv file. The feature.tsv file of the example cell hashing dataset is shown below.
+<HTO_names> are included in the features.tsv file. The content of the feature.tsv file is shown below.
 
 ![HTO names example](https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/features.png)
 
 #### Output
-MSM-free droplets, in MTX format. The output has the same format with CellRanger 3.0 outputs. By default, the output is stored in `SSD_mtx` folder. The output location can be overwritten with `-o` flag.
+The default content in the output folder are the non-MSM droplets (SSDs), stored in MTX format. The output shares the same format with CellRanger 3.0. By default, the output is stored in `SSD_mtx` folder. The output location can be overwritten with the `-o` flag.
 
 ### Case 2: Compute the MSM and SSM rates
-To compute the MSM and SSM rates, GMM-Demux requires the -u flag:
+To compute the MSM and SSM rates, GMM-Demux requires the `-u` flag:
 
 * -u SUMMARY, --summary SUMMARY  Generate the statstic summary of the dataset. Requires an estimated total number of cells in the assay as input.
  
--u flag requires an additional <NUM_OF_CELL> argument, which is the estimated total count of cells in the single cell assay.
+The `-u` flag requires an additional <NUM_OF_CELL> argument, which is the estimated total count of cells in the single cell assay.
 
 #### Example Command
 ```bash
@@ -161,14 +162,14 @@ GMM-demux example_input/outs/filtered_feature_bc_matrix HTO_1,HTO_2,HTO_3,HTO_4 
 Below is an example report:
 ![Summary example](https://raw.githubusercontent.com/CHPGenetics/GMM-Demux/master/summary.png)
 
-* RSSM denotes the percentage of SSM among the remaining SSDs (after removing all MSMs). RSSM **measures the quality of the cell hashing dataset**.
+* RSSM denotes the percentage of SSMs among the remaining SSDs (after removing all MSMs). RSSM **measures the quality of the final cell hashing dataset after removing MSMs**.
 
 ### Case 3: Verify if a cell type exists 
-GMM-Demux verifies a putative cell type with the -e flag:
+GMM-Demux verifies if a putative cell type exists with the `-e` flag:
 
 * -e EXAMINE, --examine  EXAMINE Provide the cell list. Requires a file argument. Only executes if -u is set.
 
--e flag requires a file name, which stores the list of droplet barcodes of the putative cell type.
+The `-e` flag requires a file name, which stores the list of droplet barcodes of the putative cell type.
 
 #### Example Command
 ```bash
@@ -189,12 +190,12 @@ An example output of a phony cell type:
 GMM-demux -c example_hto.csv HTO_1,HTO_2,HTO_3,HTO_4 -u 35685
 ```
 
-### Case 5: Extract droplets of specific HTO sample configurations
-Extract droplets that are labeled with specific HTO(s), with the -x flag:
+### Case 5: Extract droplets that are labeled by a combination of sample tags
+Extract droplets that are labeled by multiple sample barcoding tags, with the `-x` flag:
 
-* -x EXTRACT, --extract EXTRACT  Names of the HTO tag(s) to extract, separated by ','. Joint HTO samples are combined with '+'.
+* -x EXTRACT, --extract EXTRACT  Names of the sample barcoding tag(s) to extract, separated by ','. Joint tags are linked with '+'.
 
-**When -x is set, other functions of GMM-Demux will be turned off.**
+**When `-x` is set, other functions of GMM-Demux will be turned off.**
 
 #### *Case 5a: Extract a single HTO sample*
 
