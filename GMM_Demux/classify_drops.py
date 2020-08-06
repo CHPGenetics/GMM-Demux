@@ -112,10 +112,10 @@ def store_simplified_classify_result(data_df, class_name_array, path, sample_num
 
     simplified_df = data_df.copy()
     #print(simplified_df)
-    MSM_idx = data_df.index[(data_df["Cluster_id"] > sample_num).nonzero()[0]]
+    MSM_idx = data_df.index[(data_df["Cluster_id"] > sample_num).to_numpy().nonzero()[0]]
     #print(MSM_idx)
     simplified_df.loc[MSM_idx, "Cluster_id"] = sample_num + 1
-    unclear_idx = data_df.index[(data_df["Confidence"] < confidence_threshold).nonzero()[0]]
+    unclear_idx = data_df.index[(data_df["Confidence"] < confidence_threshold).to_numpy().nonzero()[0]]
     #print(unclear_idx)
     simplified_df.loc[unclear_idx, "Cluster_id"] = sample_num + 2
     #print(simplified_df)
