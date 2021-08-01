@@ -35,6 +35,7 @@ def main():
     parser.add_argument("-r", "--report", help="Store the data summary report. Requires a file argument. Only executes if -u is set.", type=str)
     parser.add_argument("-e", "--examine", help="Provide the cell list. Requires a file argument. Only executes if -u is set.", type=str)
     parser.add_argument("-a", "--ambiguous", help="The estimated chance of having a phony GEM getting included in a pure type GEM cluster by the clustering algorithm. Requires a float in (0, 1). Default value: 0.05. Only executes if -e executes.", type=float, default=0.05)
+    parser.add_argument("-rs", "--random_seed", help = "If provided, this is passed to the GaussianMixture random_state parameter.", default=None, type=int)
     
     print("==============================GMM-Demux Initialization==============================")
 
@@ -70,7 +71,7 @@ def main():
         ####### Run classifier #######
         base_bv_array = compute_venn.obtain_base_bv_array(sample_num)
         #print([int(i) for i in base_bv_array])
-        (high_array, low_array) = classify_drops.obtain_arrays(GMM_df)
+        (high_array, low_array) = classify_drops.obtain_arrays(GMM_df, args.random_seed)
 
         # Obtain extract array.
         if args.extract:
