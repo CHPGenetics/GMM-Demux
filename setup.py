@@ -32,6 +32,6 @@ setuptools.setup(
         "argparse",
         "statistics",
         "BitVector",
-        "sklearn"
+        "scikit-learn"
     ]
 )
