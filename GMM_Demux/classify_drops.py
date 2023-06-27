@@ -11,7 +11,7 @@ from GMM_Demux import check_multi_comp
 from GMM_Demux import compute_venn
 
 
-def obtain_arrays(data):
+def obtain_arrays(data, random_seed):
     gmm = []
     high_array = []
     low_array = []
@@ -20,6 +20,7 @@ def obtain_arrays(data):
         X = data.iloc[:,i].values[:, np.newaxis]
 
         # GMM values
+<<<<<<< HEAD
         gmm.append(GaussianMixture(2).fit(X))
         # x = np.linspace(-6, 6, 1000)[:, np.newaxis]
         # logprob= gmm[-1].score_samples(x)
@@ -29,6 +30,17 @@ def obtain_arrays(data):
         # print(pdf_individual)
         # print(gmm[-1].means_)
         # print(gmm[-1].covariances_)
+=======
+        gmm.append(GaussianMixture(2, random_state = random_seed).fit(X))
+        x = np.linspace(-6, 6, 1000)[:, np.newaxis]
+        logprob= gmm[-1].score_samples(x)
+        responsibilities = gmm[-1].predict_proba(x)
+        pdf = np.exp(logprob)
+        pdf_individual = responsibilities * pdf[:, np.newaxis]
+        #print(pdf_individual)
+
+        #print(gmm[-1].means_)
+>>>>>>> fdd6aec963298f6429498db06ad43c000df219c9
 
         # Extract prob
         high_idx = np.argmax(gmm[-1].means_, axis=0)[0]
@@ -124,10 +136,10 @@ def store_simplified_classify_result(data_df, class_name_array, path, sample_num
 
     simplified_df = data_df.copy()
     #print(simplified_df)
-    MSM_idx = data_df.index[(data_df["Cluster_id"] > sample_num).nonzero()[0]]
+    MSM_idx = data_df.index[(data_df["Cluster_id"] > sample_num).to_numpy().nonzero()[0]]
     #print(MSM_idx)
     simplified_df.loc[MSM_idx, "Cluster_id"] = sample_num + 1
-    unclear_idx = data_df.index[(data_df["Confidence"] < confidence_threshold).nonzero()[0]]
+    unclear_idx = data_df.index[(data_df["Confidence"] < confidence_threshold).to_numpy().nonzero()[0]]
     #print(unclear_idx)
     simplified_df.loc[unclear_idx, "Cluster_id"] = sample_num + 2
     #print(simplified_df)
