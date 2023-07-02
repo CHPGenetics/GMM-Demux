@@ -20,7 +20,6 @@ def obtain_arrays(data, random_seed):
         X = data.iloc[:,i].values[:, np.newaxis]
 
         # GMM values
-<<<<<<< HEAD
         gmm.append(GaussianMixture(2).fit(X))
         # x = np.linspace(-6, 6, 1000)[:, np.newaxis]
         # logprob= gmm[-1].score_samples(x)
@@ -30,17 +29,6 @@ def obtain_arrays(data, random_seed):
         # print(pdf_individual)
         # print(gmm[-1].means_)
         # print(gmm[-1].covariances_)
-=======
-        gmm.append(GaussianMixture(2, random_state = random_seed).fit(X))
-        x = np.linspace(-6, 6, 1000)[:, np.newaxis]
-        logprob= gmm[-1].score_samples(x)
-        responsibilities = gmm[-1].predict_proba(x)
-        pdf = np.exp(logprob)
-        pdf_individual = responsibilities * pdf[:, np.newaxis]
-        #print(pdf_individual)
-
-        #print(gmm[-1].means_)
->>>>>>> fdd6aec963298f6429498db06ad43c000df219c9
 
         # Extract prob
         high_idx = np.argmax(gmm[-1].means_, axis=0)[0]
