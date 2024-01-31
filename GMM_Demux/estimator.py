@@ -2,7 +2,7 @@ from GMM_Demux import compute_venn
 from math import pow
 from math import log
 from scipy.stats import binom
-from scipy.stats import binom_test
+from scipy.stats import binomtest
 
 def compute_multiplet_rates_asymp(cell_num, sample_num, drop_num):
     no_drop_rate = (1 - 1 / drop_num)
@@ -152,13 +152,13 @@ def pure_cluster_MSM_rate(drop_num, cluster_GEM_num, cell_num_ary, capture_rate,
 
 def test_phony_hypothesis(cluster_MSM_num, cluster_GEM_num, cell_num_ary, capture_rate):
     MSM_rate = phony_cluster_MSM_rate(cell_num_ary)
-    return binom_test(cluster_MSM_num / capture_rate, cluster_GEM_num / capture_rate, MSM_rate, "less")
+    return binomtest(cluster_MSM_num / capture_rate, cluster_GEM_num / capture_rate, MSM_rate, "less")
 
 
 def test_pure_hypothesis(cluster_MSM_num, drop_num, cluster_GEM_num, cell_num_ary, capture_rate, ambiguous_rate = 0):
     MSM_rate = pure_cluster_MSM_rate(drop_num, cluster_GEM_num, cell_num_ary, capture_rate, ambiguous_rate)
     print("Estimated MSM rate: ", MSM_rate)
-    return binom_test(cluster_MSM_num / capture_rate, cluster_GEM_num / capture_rate, MSM_rate, "greater")
+    return binomtest(cluster_MSM_num / capture_rate, cluster_GEM_num / capture_rate, MSM_rate, "greater")
 
 
 ####Debuging Functions####
