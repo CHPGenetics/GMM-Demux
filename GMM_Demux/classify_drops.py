@@ -5,7 +5,7 @@ from scipy import stats
 from sys import argv
 from sklearn.mixture import GaussianMixture
 import os
-from math import log2
+from math import log2, sqrt
 
 from GMM_Demux import check_multi_comp
 from GMM_Demux import compute_venn
@@ -20,22 +20,34 @@ def obtain_arrays(data, random_seed):
         X = data.iloc[:,i].values[:, np.newaxis]
 
         # GMM values
-        gmm.append(GaussianMixture(2, random_state = random_seed).fit(X))
-        x = np.linspace(-6, 6, 1000)[:, np.newaxis]
-        logprob= gmm[-1].score_samples(x)
-        responsibilities = gmm[-1].predict_proba(x)
-        pdf = np.exp(logprob)
-        pdf_individual = responsibilities * pdf[:, np.newaxis]
-        #print(pdf_individual)
-
-        #print(gmm[-1].means_)
+        gmm.append(GaussianMixture(2).fit(X))
+        # x = np.linspace(-6, 6, 1000)[:, np.newaxis]
+        # logprob= gmm[-1].score_samples(x)
+        # responsibilities = gmm[-1].predict_proba(x)
+        # pdf = np.exp(logprob)
+        # pdf_individual = responsibilities * pdf[:, np.newaxis]
+        # print(pdf_individual)
+        # print(gmm[-1].means_)
+        # print(gmm[-1].covariances_)
 
         # Extract prob
         high_idx = np.argmax(gmm[-1].means_, axis=0)[0]
         post_prob = gmm[-1].predict_proba(X)
+
         high_array.append(post_prob[np.arange(post_prob.shape[0]), np.full(post_prob.shape[0], high_idx)])
+
+        # Correct outliers
+        high_outlier_cutoff = gmm[-1].means_[high_idx] + sqrt(gmm[-1].covariances_[high_idx][0])
+        high_outlier_idx = np.argwhere(X > high_outlier_cutoff)[:,0].ravel()
+        low_outlier_cutoff = gmm[-1].means_[1-high_idx] - sqrt(gmm[-1].covariances_[1-high_idx][0])
+        low_outlier_idx = np.argwhere(X < low_outlier_cutoff)[:,0].ravel()
+
+        high_array[-1][high_outlier_idx] = 1.0
+        high_array[-1][low_outlier_idx] = 0.0
+
         low_array.append(np.full(post_prob.shape[0], 1.0) - high_array[-1])
 
+        
     return high_array, low_array
 
 
