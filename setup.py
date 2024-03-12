@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="GMM_Demux",
-    version="0.2.2.1",
+    version="0.2.2.2",
     author="Hongyi Xin",
     author_email="gohongyi@gmail.com",
     description="A multiplet removal tool for processing cell hashing data",
@@ -27,11 +27,11 @@ setuptools.setup(
     install_requires=[
         "pandas>=1.4.3",
         "numpy>=1.22.4",
-        "scipy",
+        "scipy>=1.12.0",
         "tabulate",
         "argparse",
         "statistics",
         "BitVector",
-        "sklearn"
+        "scikit-learn"
     ]
 )
