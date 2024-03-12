@@ -20,7 +20,7 @@ def obtain_arrays(data, random_seed):
         X = data.iloc[:,i].values[:, np.newaxis]
 
         # GMM values
-        gmm.append(GaussianMixture(2).fit(X))
+        gmm.append(GaussianMixture(2, random_state = random_seed).fit(X))
         # x = np.linspace(-6, 6, 1000)[:, np.newaxis]
         # logprob= gmm[-1].score_samples(x)
         # responsibilities = gmm[-1].predict_proba(x)
